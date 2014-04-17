@@ -135,7 +135,12 @@ public class ARCameraController : MonoBehaviour {
 				//translateMode = true;
 			}
 			int number = 8;
-			GUI.Label((new Rect (0, 0, 100, 100)),"Score: "+ number);
+			GUI.Label((new Rect (0, 0, 100, 100)),"Player 1");
+			GUI.Label((new Rect (0, 50, 100, 100)),"Count: "+ number);
+			GUI.Label((new Rect (0, 100, 100, 100)),"Score: "+ number);
+			GUI.Label((new Rect (600, 0, 100, 100)),"Player 2");
+			GUI.Label((new Rect (600, 50, 100, 100)),"Count: "+ number);
+			GUI.Label((new Rect (600, 100, 100, 100)),"Score: "+ number);
 
 		}
 	}
