@@ -2,8 +2,9 @@
 using System.Collections;
 
 public class ARCameraController : MonoBehaviour {
-
+	//GameObjects
 	public GameObject ImageTarget;
+	public GameObject Board;
 	
 	// Debug
 	public GUIText sysinfo;
@@ -94,7 +95,7 @@ public class ARCameraController : MonoBehaviour {
 		//if the target is detected before game starts it will show menu
 		DefaultTrackableEventHandler s = ImageTarget.GetComponent<DefaultTrackableEventHandler>();
 		menu = s.startGame;
-		
+
 		
 	}
 	
@@ -107,6 +108,8 @@ public class ARCameraController : MonoBehaviour {
 				if (GUI.Button (new Rect (300, 110, 150, 100), "START")) {
 					showMenu = true;
 					showStart=false;
+					GameScript b = Board.GetComponent<GameScript> ();
+					b.makeBoard ();
 				}
 			}
 		}
