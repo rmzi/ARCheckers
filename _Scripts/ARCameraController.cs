@@ -5,9 +5,11 @@ public class ARCameraController : MonoBehaviour {
 	
 	// Debug
 	public GUIText sysinfo;
+
 	//public Transform debugSphere;
 	public Color defaultColor = Color.white;
 	
+
 	// Focus	
 	public int focusDistance;
 	private Ray focusRay;
@@ -23,6 +25,7 @@ public class ARCameraController : MonoBehaviour {
 	private bool translateMode;
 	private bool selectInsteadOfFocus;
 	private bool deselectMode;
+	private bool startGame;
 	
 	// Use this for initialization
 	void Start () {
@@ -30,10 +33,12 @@ public class ARCameraController : MonoBehaviour {
 		selectedObject = null;
 		sysinfo.text = "Approach a game piece to select it.";
 	}
-	
+
+
 	// Update is called once per frame
 	void Update () {
-		
+
+
 		// Setup variable to hold raycast information
 		RaycastHit hit;
 		
@@ -84,30 +89,33 @@ public class ARCameraController : MonoBehaviour {
 		
 	}
 	
-	void LateUpdate (){
-		
-	}
-	
 	void OnGUI () {
-		
 		///////////////
-		// Selection //
+		///Start Game //
 		///////////////
-		if (GUI.Button (new Rect (10, 110, 150, 100), "Select Object")) {
-			selectInsteadOfFocus = true;
+		if (!startGame) {
+			if (GUI.Button (new Rect (300, 110, 150, 100), "START")) {
+				startGame = true;
+			}
 		}
-		
-		// Deselection
-		if (GUI.Button (new Rect (160, 110, 150, 100), "Deselect Object")) {
-			deselectMode = true;
-		}
-		
-		
-		/////////////////
-		// Translation //
-		/////////////////
-		if (GUI.RepeatButton (new Rect (10, 210, 100, 100), "Translate")) {
-			translateMode = true;
+		if (startGame) {
+			///////////////
+			// Selection //
+			///////////////
+			if (GUI.Button (new Rect (10, 110, 150, 100), "Select Object")) {
+				selectInsteadOfFocus = true;
+			}
+	
+			// Deselection
+			if (GUI.Button (new Rect (160, 110, 150, 100), "Deselect Object")) {
+				deselectMode = true;
+			}
+			/////////////////
+    		 // Translation //
+			/////////////////
+			if (GUI.RepeatButton (new Rect (10, 210, 100, 100), "Translate")) {
+				translateMode = true;
+			}
 		}
 	}
 	
