@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class ARCameraController : MonoBehaviour {
+
+	public GameObject ImageTarget;
 	
 	// Debug
 	public GUIText sysinfo;
@@ -25,10 +27,14 @@ public class ARCameraController : MonoBehaviour {
 	private bool translateMode;
 	private bool selectInsteadOfFocus;
 	private bool deselectMode;
-	private bool startGame;
-	
+	//bools handeling menu
+	private bool showMenu;
+	private bool menu ;
+	private bool showStart;
+
 	// Use this for initialization
 	void Start () {
+		showStart = true;
 		focusedObject = null;
 		selectedObject = null;
 		sysinfo.text = "Approach a game piece to select it.";
@@ -85,6 +91,9 @@ public class ARCameraController : MonoBehaviour {
 				defocusObject();
 			}
 		}
+		//if the target is detected before game starts it will show menu
+		DefaultTrackableEventHandler s = ImageTarget.GetComponent<DefaultTrackableEventHandler>();
+		menu = s.startGame;
 		
 		
 	}
@@ -93,29 +102,41 @@ public class ARCameraController : MonoBehaviour {
 		///////////////
 		///Start Game //
 		///////////////
-		if (!startGame) {
-			if (GUI.Button (new Rect (300, 110, 150, 100), "START")) {
-				startGame = true;
+		if (showStart) {
+			if(menu){
+				if (GUI.Button (new Rect (300, 110, 150, 100), "START")) {
+					showMenu = true;
+					showStart=false;
+				}
 			}
 		}
-		if (startGame) {
+		if (showMenu) {
 			///////////////
 			// Selection //
 			///////////////
-			if (GUI.Button (new Rect (10, 110, 150, 100), "Select Object")) {
+			if (GUI.Button (new Rect (590, 290, 150, 100), "Select Object")) {
 				selectInsteadOfFocus = true;
 			}
 	
 			// Deselection
-			if (GUI.Button (new Rect (160, 110, 150, 100), "Deselect Object")) {
+			if (GUI.Button (new Rect (440, 290, 150, 100), "Deselect Object")) {
 				deselectMode = true;
 			}
 			/////////////////
     		 // Translation //
 			/////////////////
-			if (GUI.RepeatButton (new Rect (10, 210, 100, 100), "Translate")) {
+			if (GUI.RepeatButton (new Rect (340, 290, 100, 100), "Translate")) {
 				translateMode = true;
 			}
+			/////////////////
+			//   NewGame   //
+			/////////////////
+			if (GUI.RepeatButton (new Rect (240, 290, 100, 100), "New Game")) {
+				//translateMode = true;
+			}
+			int number = 8;
+			GUI.Label((new Rect (0, 0, 100, 100)),"Score: "+ number);
+
 		}
 	}
 	

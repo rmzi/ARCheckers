@@ -13,7 +13,7 @@ public class GameScript : MonoBehaviour {
 		newPiece.parent = board;
 		newPiece.renderer.material.color = Color.green;
 
-		int boardSize = 8
+		int boardSize = 8;
 		/*
 		for(int i = 0; i < boardSize; i++){
 			for(int i = 0; i < boardSize; i++){

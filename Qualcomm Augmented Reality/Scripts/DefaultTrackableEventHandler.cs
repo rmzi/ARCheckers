@@ -6,6 +6,8 @@ Confidential and Proprietary - Qualcomm Connected Experiences, Inc.
 
 using UnityEngine;
 
+
+
 /// <summary>
 /// A custom handler that implements the ITrackableEventHandler interface.
 /// </summary>
@@ -21,6 +23,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour,
 
 
     #region UNTIY_MONOBEHAVIOUR_METHODS
+	public bool startGame;
     
     void Start()
     {
@@ -49,7 +52,10 @@ public class DefaultTrackableEventHandler : MonoBehaviour,
             newStatus == TrackableBehaviour.Status.TRACKED ||
             newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
         {
+			startGame = true;
+			
             OnTrackingFound();
+
         }
         else
         {
