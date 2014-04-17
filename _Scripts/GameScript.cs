@@ -12,6 +12,15 @@ public class GameScript : MonoBehaviour {
 		Transform board = GameObject.FindGameObjectWithTag ("Board").transform;
 		newPiece.parent = board;
 		newPiece.renderer.material.color = Color.green;
+
+		int boardSize = 8
+		/*
+		for(int i = 0; i < boardSize; i++){
+			for(int i = 0; i < boardSize; i++){
+				Instantiate(boardPiecePrefab, 
+			}
+		}
+		*/
 	}
 	
 	// Update is called once per frame
