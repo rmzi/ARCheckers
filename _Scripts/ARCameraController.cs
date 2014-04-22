@@ -28,6 +28,7 @@ public class ARCameraController : MonoBehaviour {
 	private bool translateMode;
 	private bool selectInsteadOfFocus;
 	private bool deselectMode;
+
 	//bools handeling menu
 	private bool showMenu;
 	private bool menu ;
@@ -178,16 +179,3 @@ public class ARCameraController : MonoBehaviour {
 		sysinfo.text = "Approach a game piece to select it.";
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

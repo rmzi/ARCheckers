@@ -5,8 +5,9 @@ public class CubeSpaceScript : MonoBehaviour {
 
 	// Use this for initialization
 	private Color color;
+	private bool isOccupied;
 	void Start () {
-		transform.gameObject.renderer.material.color = color;
+		isOccupied = false;
 	}
 	
 	// Update is called once per frame
@@ -14,7 +15,8 @@ public class CubeSpaceScript : MonoBehaviour {
 	
 	}
 
-	void setColor(Color c){
+	public void setColor(Color c){
 		color = c;
+		transform.gameObject.renderer.material.color = color;
 	}
 }
