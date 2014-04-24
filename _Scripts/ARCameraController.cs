@@ -77,9 +77,7 @@ public class ARCameraController : MonoBehaviour {
 				// Focus Mode
 				// If no selected object + no focused object
 				if(selectedObject == null){
-					if(focusedObject == null){
-						focusOnObject (hit.transform);
-					}
+					focusOnObject (hit.transform);
 				}
 			}
 		} else {
