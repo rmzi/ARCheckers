@@ -8,6 +8,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	private bool isOccupied;
 	void Start () {
 		isOccupied = false;
+		transform.tag = "space";
 	}
 	
 	// Update is called once per frame

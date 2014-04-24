@@ -9,9 +9,8 @@ public class ARCameraController : MonoBehaviour {
 	// Debug
 	public GUIText sysinfo;
 
-	//public Transform debugSphere;
+	public Transform debugSphere;
 	public Color defaultColor = Color.white;
-	
 
 	// Focus	
 	public int focusDistance;
@@ -57,8 +56,8 @@ public class ARCameraController : MonoBehaviour {
 		// Debug
 		// Draw ray during pause mode with sphere at the end
 		Debug.DrawRay (transform.position, focusRay.direction * focusDistance);
-		//debugSphere = GameObject.FindGameObjectWithTag ("SelectionTarget").transform;
-		//debugSphere.position = transform.position + focusRay.direction * focusDistance;
+		debugSphere = GameObject.FindGameObjectWithTag ("debug").transform;
+		debugSphere.position = focusPoint;
 		
 		if (translateMode) {
 			if(selectedObject != null){
@@ -71,12 +70,14 @@ public class ARCameraController : MonoBehaviour {
 		if (Physics.Raycast (focusRay, out hit, focusDistance)) {
 			// Selection Mode
 			if(selectInsteadOfFocus){
-				selectObject(hit.transform);
-				selectInsteadOfFocus = false;
+				if(transform.tag=="piece"){
+					selectObject(hit.transform);
+					selectInsteadOfFocus = false;
+				}
 			}else {
 				// Focus Mode
 				// If no selected object + no focused object
-				if(selectedObject == null){
+				if(selectedObject == null && hit.transform.tag=="piece"){
 					focusOnObject (hit.transform);
 				}
 			}
@@ -148,15 +149,19 @@ public class ARCameraController : MonoBehaviour {
 	}
 	
 	void focusOnObject (Transform obj){
+		if (focusedObject != null) {
+			focusedObject.GetComponent<GamePieceScript>().resetColor();
+		}
 		print("I'm looking at " + obj.name);
-		obj.transform.renderer.material.color = focusColor;
+		GamePieceScript piece = obj.GetComponent<GamePieceScript> ();
+		piece.focus ();
 		focusedObject = obj.gameObject;
 		sysinfo.text = "Focused on object: " + focusedObject.transform.name;
 	}
 	
 	void defocusObject (){
 		Debug.Log ("DEFOCUS: " + focusedObject.transform.name);
-		focusedObject.transform.renderer.material.color = defaultColor;
+		focusedObject.GetComponent<GamePieceScript> ().resetColor ();
 		focusedObject = null; 
 		sysinfo.text = "Approach a game piece to select it.";
 	}
@@ -164,7 +169,7 @@ public class ARCameraController : MonoBehaviour {
 	void selectObject (Transform obj){
 		// Change object color to red
 		Debug.Log ("Selecting Object: " + obj.transform.name);
-		obj.transform.renderer.material.color = selectedColor;
+		obj.gameObject.GetComponent<GamePieceScript> ().select ();
 		selectedObject = obj.gameObject;
 		focusedObject = null;
 
@@ -172,7 +177,7 @@ public class ARCameraController : MonoBehaviour {
 	}
 	
 	void deselectObject (){
-		selectedObject.transform.renderer.material.color = defaultColor;
+		selectedObject.GetComponent<GamePieceScript> ().resetColor ();
 		selectedObject = null;
 		sysinfo.text = "Approach a game piece to select it.";
 	}

@@ -10,7 +10,7 @@ public class GamePieceScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		transform.tag = "piece";
 	}
 	
 	// Update is called once per frame
@@ -19,6 +19,15 @@ public class GamePieceScript : MonoBehaviour {
 	}
 	public void setColor(Color c){
 		color = c;
+		transform.gameObject.renderer.material.color = color;
+	}
+	public void focus(){
+		transform.gameObject.renderer.material.color = Color.cyan;
+	}
+	public void select(){
+		transform.gameObject.renderer.material.color = Color.red;
+	}
+	public void resetColor(){
 		transform.gameObject.renderer.material.color = color;
 	}
 }

@@ -33,8 +33,8 @@ public class GameScript : MonoBehaviour {
 					} else {
 						gameBoard[i,j] = boardPieces[i,j].GetComponent<CubeSpaceScript> ();
 						gameBoard[i,j].setColor(Color.black);
-						if(i!=4 || i!=5){
-							Vector3 offset = new Vector3(0,1,0);
+						if(i!=3 && i!=4){
+							Vector3 offset = new Vector3(0,10,0);
 							Transform newGamePiece = (Transform)Instantiate(gamePiecePrefab, nextLocation + offset, Quaternion.identity);
 							newGamePiece.parent = board;
 							if(i<4){
