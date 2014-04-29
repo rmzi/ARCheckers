@@ -7,16 +7,16 @@ public class GameScript : MonoBehaviour {
 	public Transform gamePiecePrefab;
 	private Transform[,] boardPieces;
 	private CubeSpaceScript[,] gameBoard;
-	private GamePieceScript[] player1GamePieces;
-	private GamePieceScript[] player2GamePieces;
+	private Player player1;
+	private Player player2;
 	private Transform board;
 
 	// Use this for initialization
 	void Start () {
 		gameBoard	= new CubeSpaceScript[8,8];
 		boardPieces = new Transform[8,8];
-		player1GamePieces = new GamePieceScript[12];
-		player2GamePieces = new GamePieceScript[12];
+		player1 = new Player(1);
+		player2 = new Player(2);
 		board = GameObject.FindGameObjectWithTag ("Board").transform;
 	}
 
@@ -38,9 +38,9 @@ public class GameScript : MonoBehaviour {
 							Transform newGamePiece = (Transform)Instantiate(gamePiecePrefab, nextLocation + offset, Quaternion.identity);
 							newGamePiece.parent = board;
 							if(i<4){
-								newGamePiece.renderer.material.color = Color.red;
+								player1.addPiece(newGamePiece);
 							}else{
-								newGamePiece.renderer.material.color = Color.gray;
+								player2.addPiece(newGamePiece);
 							}
 						}
 					}
@@ -57,10 +57,25 @@ public class GameScript : MonoBehaviour {
 	public class Player{
 		public int player;
 		public GamePieceScript[] pieces;
+		public Transform[] piecesTransform;
 		public int numPieces;
+		public Color playerColor;
 		Player(int p){
 			player = p;
 			numPieces = 0;
+			pieces = new GamePieceScript[12];
+			piecesTransform = new Transform[12];
+			if(player==1){
+				playerColor = Color.red;
+			}else{
+				playerColor = Color.grey;
+			}
+		}
+		public void addPiece(Transform p){
+			pieces[numPieces]=p.GetComponent<GamePieceScript> ();
+			pieces[numPieces].setColor (playerColor);
+			piecesTransform [numPieces] = p;
+			numPieces++;
 		}
 	}
 }
