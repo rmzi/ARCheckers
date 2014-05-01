@@ -24,8 +24,8 @@ public class ARCameraController : MonoBehaviour {
 
 	// Low level modes are nested in high level modes
 	// All modes are ENUM and their values are listed below
-	public int highMode = "";
-	public int lowMode = "";
+	public int highMode = -1;
+	public int lowMode = -1;
 	
 	//GameObjects
 	public GameObject ImageTarget;
@@ -83,7 +83,7 @@ public class ARCameraController : MonoBehaviour {
 		Debug.DrawRay (transform.position, focusRay.direction * focusDistance);
 		debugSphere = GameObject.FindGameObjectWithTag ("debug").transform;
 		debugSphere.position = focusPoint;
-		if (highMode == PREGAME_MODE{
+		if (highMode == PREGAME_MODE){
 			// DON'T DO ANYTHING!
 		} else if (highMode == PLAY_MODE) {
 			// PLAY MODE
@@ -95,13 +95,11 @@ public class ARCameraController : MonoBehaviour {
 				if (Physics.Raycast (focusRay, out hit, focusDistance)) {
 					if(hit.transform.tag == "piece"){
 						// Highlight Piece that's focused on
-						GamePieceScript pieceController = hit.transform.GetComponent<GamePieceScript>;
-						pieceController.focus ();
-						focusedObject = hit.transform;
+						hit.transform.GetComponent<GamePieceScript>().focus();
+						focusedObject = hit.transform.gameObject;
 					} else {
 						if(focusedObject != null){
-							GamePieceScript pieceController = focusedObject.GetComponent<GamePieceScript>;
-							pieceController.resetColor();
+							focusedObject.GetComponent<GamePieceScript>().resetColor();
 							focusedObject = null;
 						}
 					}
@@ -165,18 +163,18 @@ public class ARCameraController : MonoBehaviour {
 			/// Pick Up
 			/// Place
 			if (GUI.Button (new Rect (350, (height-100), 150, 100), "Select Object")) {
-				selectInsteadOfFocus = true;
+				lowMode = MOVE_MODE;
 			}
 	
 			// Deselection
 			if (GUI.Button (new Rect (200,(height-100), 150, 100), "Deselect Object")) {
-				deselectMode = true;
+				lowMode = SEL_MODE;
 			}
 			/////////////////
     		 // Translation //
 			/////////////////
-			if (GUI.RepeatButton (new Rect (100, (height-100), 100, 100), "Translate")) {
-				translateMode = true;
+			if (GUI.RepeatButton (new Rect (100, (height-100), 100, 100), "Explore")) {
+				 highMode = EXPLORE_MODE;
 			}
 			/////////////////
 			//   NewGame   //

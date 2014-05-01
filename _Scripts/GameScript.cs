@@ -67,12 +67,12 @@ public class GameScript : MonoBehaviour {
 		public Transform[] piecesTransform;
 		public int numPieces;
 		public Color playerColor;
-		Player(int p){
+		public Player(int p){
 			player = p;
 			numPieces = 0;
 			pieces = new GamePieceScript[12];
 			piecesTransform = new Transform[12];
-			if(player==player1){
+			if(player==1){
 				playerColor = Color.red;
 			}else{
 				playerColor = Color.grey;
