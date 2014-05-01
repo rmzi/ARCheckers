@@ -7,6 +7,7 @@ public class GameScript : MonoBehaviour {
 	public Transform gamePiecePrefab;
 	private Transform[,] boardPieces;
 	private CubeSpaceScript[,] gameBoard;
+	private int turn;
 	private Player player1;
 	private Player player2;
 	private Transform board;
@@ -18,6 +19,7 @@ public class GameScript : MonoBehaviour {
 		player1 = new Player(1);
 		player2 = new Player(2);
 		board = GameObject.FindGameObjectWithTag ("Board").transform;
+		turn = 1;
 	}
 
 	public void makeBoard(){
@@ -49,13 +51,18 @@ public class GameScript : MonoBehaviour {
 		
 
 	}
+	public void playGame(){
+	}
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
 	public class Player{
+		public static int turn=1;
+		//player number
 		public int player;
+		//pieces that belong to the player
 		public GamePieceScript[] pieces;
 		public Transform[] piecesTransform;
 		public int numPieces;
@@ -65,7 +72,7 @@ public class GameScript : MonoBehaviour {
 			numPieces = 0;
 			pieces = new GamePieceScript[12];
 			piecesTransform = new Transform[12];
-			if(player==1){
+			if(player==player1){
 				playerColor = Color.red;
 			}else{
 				playerColor = Color.grey;
@@ -76,6 +83,11 @@ public class GameScript : MonoBehaviour {
 			pieces[numPieces].setColor (playerColor);
 			piecesTransform [numPieces] = p;
 			numPieces++;
+		}
+		//public
+		//allows player to request draw and pass the device to the other user to either accept or deny
+		public bool requestDraw(){
+			return false;
 		}
 	}
 }

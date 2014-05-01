@@ -7,10 +7,12 @@ public class GamePieceScript : MonoBehaviour {
 	public bool isMoving;
 	public Vector2 location;
 	public Color color;
+	public bool isKing;
 
 	// Use this for initialization
 	void Start () {
 		transform.tag = "piece";
+		isKing = false;
 	}
 	
 	// Update is called once per frame

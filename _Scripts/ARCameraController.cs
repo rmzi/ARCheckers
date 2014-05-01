@@ -2,6 +2,29 @@
 using System.Collections;
 
 public class ARCameraController : MonoBehaviour {
+	// Modes
+	// Modes will determine which code to run to increase efficiency of calculations
+	// High level modes: Pregame, Play & Explore
+	private const int PREGAME_MODE = 0;
+	private const int PLAY_MODE = 1;
+	private const int EXPLORE_MODE = 2;
+
+	// GUI Low level modes: Init, Start, Instructions
+	private const int INIT_MODE = 0;
+	private const int START_MODE = 1;
+	private const int INSTR_MODE = 2;
+
+	// UPDATE Low level modes: Selection, Movement, Scaling Mode
+	private const int SEL_MODE = 3;
+	private const int MOVE_MODE = 4;
+	private const int SCALE_MODE = 5; 
+
+
+	// Low level modes are nested in high level modes
+	// All modes are ENUM and their values are listed below
+	public int highMode = "";
+	public int lowMode = "";
+	
 	//GameObjects
 	public GameObject ImageTarget;
 	public GameObject Board;
@@ -16,21 +39,14 @@ public class ARCameraController : MonoBehaviour {
 	public int focusDistance;
 	private Ray focusRay;
 	private GameObject focusedObject;
-	private Color focusColor = Color.magenta;
 	private Vector3 focusPoint;
 	
 	// Selection
 	private GameObject selectedObject;
-	private Color selectedColor = Color.red;
-	
-	// Booleans for Modes
-	private bool translateMode;
-	private bool selectInsteadOfFocus;
-	private bool deselectMode;
 
-	//bools handeling menu
+	//bools handling menu
 	private bool showMenu;
-	private bool menu ;
+	private bool menu;
 	private bool showStart;
 
 	// Use this for initialization
@@ -45,57 +61,57 @@ public class ARCameraController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-
-		// Setup variable to hold raycast information
-		RaycastHit hit;
-		
 		// Point Ray through center of camera viewport 
 		focusRay = camera.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
 		focusPoint = transform.position + focusRay.direction * focusDistance;
-		
+
 		// Debug
 		// Draw ray during pause mode with sphere at the end
 		Debug.DrawRay (transform.position, focusRay.direction * focusDistance);
 		debugSphere = GameObject.FindGameObjectWithTag ("debug").transform;
 		debugSphere.position = focusPoint;
-		
-		if (translateMode) {
-			if(selectedObject != null){
+		if (highMode == PREGAME_MODE{
+			// DON'T DO ANYTHING!
+		} else if (highMode == PLAY_MODE) {
+			// PLAY MODE
+
+			if(lowMode == SEL_MODE){
+				// Setup variable to hold raycast information
+				RaycastHit hit;
+
+				if (Physics.Raycast (focusRay, out hit, focusDistance)) {
+					if(hit.transform.tag == "piece"){
+						// Highlight Piece that's focused on
+						GamePieceScript pieceController = hit.transform.GetComponent<GamePieceScript>;
+						pieceController.focus ();
+						focusedObject = hit.transform;
+					} else {
+						if(focusedObject != null){
+							GamePieceScript pieceController = focusedObject.GetComponent<GamePieceScript>;
+							pieceController.resetColor();
+							focusedObject = null;
+						}
+					}
+				}
+
+			} else if(lowMode == MOVE_MODE){
 				selectedObject.transform.position = focusPoint;
-				translateMode = false;
+			}
+
+
+		} else if(highMode == EXPLORE_MODE){
+			// EXPLORE MODE
+
+			// Translation via Joystick
+
+			if(lowMode == SCALE_MODE){
+
 			}
 		}
 		
-		// Raycast for focusing
-		if (Physics.Raycast (focusRay, out hit, focusDistance)) {
-			// Selection Mode
-			if(selectInsteadOfFocus){
-				if(transform.tag=="piece"){
-					selectObject(hit.transform);
-					selectInsteadOfFocus = false;
-				}
-			}else {
-				// Focus Mode
-				// If no selected object + no focused object
-				if(selectedObject == null && hit.transform.tag=="piece"){
-					focusOnObject (hit.transform);
-				}
-			}
-		} else {
-			if (deselectMode){
-				deselectObject();
-				deselectMode = false;
-			}
-			
-			// If not focused on anything, remove focus color from previously focused object
-			if (focusedObject != null){
-				defocusObject();
-			}
-		}
 		//if the target is detected before game starts it will show menu
 		DefaultTrackableEventHandler s = ImageTarget.GetComponent<DefaultTrackableEventHandler>();
 		menu = s.startGame;
-
 		
 	}
 	
@@ -117,6 +133,11 @@ public class ARCameraController : MonoBehaviour {
 			///////////////
 			// Selection //
 			///////////////
+			
+				/// These two buttons should be on top of each other;
+
+			/// Pick Up
+			/// Place
 			if (GUI.Button (new Rect (590, 290, 150, 100), "Select Object")) {
 				selectInsteadOfFocus = true;
 			}
@@ -146,6 +167,47 @@ public class ARCameraController : MonoBehaviour {
 			GUI.Label((new Rect (600, 100, 100, 100)),"Score: "+ number);
 
 		}
+		
+		/*
+		if (highMode == PREGAME_MODE){
+			// PREGAME MODE
+			if(lowMode == INIT_MODE){
+			// INITIALIZE MODE
+			// Prompt user to find image target
+
+			}else if(lowMode == START_MODE){
+			// START MODE
+			// Prompt user to start game
+
+			}else if(lowMode == INSTR_MODE){
+			//
+
+			}
+
+		} else if (highMode == PLAY_MODE) {
+			// PLAY MODE
+			
+			if(lowMode == SEL_MODE){
+				// SELECTION MODE
+
+			}
+				
+			} else if(lowMode == MOVE_MODE){
+				// MOVEMENT MODE
+				selectedObject.transform.position = focusPoint;
+			}
+			
+			
+		} else if(highMode == EXPLORE_MODE){
+				// EXPLORE MODE
+				
+				// Translation via Joystick
+				
+				if(lowMode == SCALE_MODE){
+					// SCALE MODE
+					
+				}
+		}*/
 	}
 	
 	void focusOnObject (Transform obj){
