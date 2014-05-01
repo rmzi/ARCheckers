@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+
 public class ARCameraController : MonoBehaviour {
 	// Modes
 	// Modes will determine which code to run to increase efficiency of calculations
@@ -28,7 +30,16 @@ public class ARCameraController : MonoBehaviour {
 	//GameObjects
 	public GameObject ImageTarget;
 	public GameObject Board;
-	
+
+	// Player Mode
+	public bool p1;
+	public bool p2;
+	public GUIStyle turn;
+
+	//Screen dimensions
+	private int height = Screen.height;
+	private int width = Screen.width;
+
 	// Debug
 	public GUIText sysinfo;
 
@@ -55,6 +66,8 @@ public class ARCameraController : MonoBehaviour {
 		focusedObject = null;
 		selectedObject = null;
 		sysinfo.text = "Approach a game piece to select it.";
+		p1 = false;
+		p2 = false;
 	}
 
 
@@ -124,10 +137,23 @@ public class ARCameraController : MonoBehaviour {
 				if (GUI.Button (new Rect (300, 110, 150, 100), "START")) {
 					showMenu = true;
 					showStart=false;
+					p1 = true;
 					GameScript b = Board.GetComponent<GameScript> ();
 					b.makeBoard ();
 				}
 			}
+		}
+		//player message
+		if (p1) {
+
+			turn.normal.textColor = Color.magenta;
+			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 1", turn);
+			p2 = false;
+		}
+		if (p2) {
+			turn.normal.textColor = Color.magenta;
+			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 2", turn);
+			p1 = false;
 		}
 		if (showMenu) {
 			///////////////
@@ -138,33 +164,33 @@ public class ARCameraController : MonoBehaviour {
 
 			/// Pick Up
 			/// Place
-			if (GUI.Button (new Rect (590, 290, 150, 100), "Select Object")) {
+			if (GUI.Button (new Rect (350, (height-100), 150, 100), "Select Object")) {
 				selectInsteadOfFocus = true;
 			}
 	
 			// Deselection
-			if (GUI.Button (new Rect (440, 290, 150, 100), "Deselect Object")) {
+			if (GUI.Button (new Rect (200,(height-100), 150, 100), "Deselect Object")) {
 				deselectMode = true;
 			}
 			/////////////////
     		 // Translation //
 			/////////////////
-			if (GUI.RepeatButton (new Rect (340, 290, 100, 100), "Translate")) {
+			if (GUI.RepeatButton (new Rect (100, (height-100), 100, 100), "Translate")) {
 				translateMode = true;
 			}
 			/////////////////
 			//   NewGame   //
 			/////////////////
-			if (GUI.RepeatButton (new Rect (240, 290, 100, 100), "New Game")) {
+			if (GUI.RepeatButton (new Rect (0, (height-100), 100, 100), "New Game")) {
 				//translateMode = true;
 			}
 			int number = 8;
 			GUI.Label((new Rect (0, 0, 100, 100)),"Player 1");
 			GUI.Label((new Rect (0, 50, 100, 100)),"Count: "+ number);
 			GUI.Label((new Rect (0, 100, 100, 100)),"Score: "+ number);
-			GUI.Label((new Rect (600, 0, 100, 100)),"Player 2");
-			GUI.Label((new Rect (600, 50, 100, 100)),"Count: "+ number);
-			GUI.Label((new Rect (600, 100, 100, 100)),"Score: "+ number);
+			GUI.Label((new Rect ((width-50), 0, 100, 100)),"Player 2");
+			GUI.Label((new Rect ((width-50), 50, 100, 100)),"Count: "+ number);
+			GUI.Label((new Rect ((width-50), 100, 100, 100)),"Score: "+ number);
 
 		}
 		
