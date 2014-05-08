@@ -5,10 +5,17 @@ public class CubeSpaceScript : MonoBehaviour {
 
 	// Use this for initialization
 	private Color color;
-	private bool isOccupied;
+	public bool isOccupied;
+	public GameScript game;
+	private GamePieceScript piece;
+	private bool isValid;
+	private Color highlightColor;
+	Vector2 boardSpot;
 	void Start () {
 		isOccupied = false;
 		transform.tag = "space";
+		this.makeInvalid ();
+		piece = null;
 	}
 	
 	// Update is called once per frame
@@ -23,13 +30,55 @@ public class CubeSpaceScript : MonoBehaviour {
 		}
 	}
 	void OnTriggerStay(Collider other) {
-
+		Debug.DrawRay (other.transform.position, Vector3.down * 10);
+		RaycastHit hit;
+		
+		if (Physics.Raycast (other.transform.position, Vector3.down, out hit, 10)) {
+			Debug.Log("Hit tag: " + hit.transform.tag);
+			if(hit.transform.tag == "board"){
+				if(hit.transform.GetComponent<CubeSpaceScript>().getLocation().Equals(boardSpot)){
+					this.highlight();
+				}
+				// Highlight Piece that's focused on
+				Debug.Log("hovering over black spot");
+			} else {
+				Debug.Log("Searching");
+			}
+		}
 		
 	}
 	void OnTriggerExit(Collider other){
-	
+		resetColor ();
 	}
-	public void highlight(Color h){
-		transform.gameObject.renderer.material.color = h;
+	public void highlight(){
+		transform.gameObject.renderer.material.color = highlightColor;
+	}
+	public void setSpace(Vector2 loc){
+		boardSpot = loc;
+	}
+	public Vector2 getLocation(){
+		return boardSpot;
+	}
+	public void makeValid(){
+		isValid = true;
+		highlightColor = Color.green;
+	}
+	public void makeInvalid(){
+		isValid = false;
+		highlightColor = Color.yellow;
+	}
+	public void resetColor(){
+		transform.gameObject.renderer.material.color = color;
+	}
+	public void setPiece(GamePieceScript piece){
+		isOccupied = true;
+		this.piece = piece;
+	}
+	public GamePieceScript getPiece(){
+		return this.piece;
+	}
+	public void unOccupy(){
+		isOccupied = false;
+		this.piece = null;
 	}
 }

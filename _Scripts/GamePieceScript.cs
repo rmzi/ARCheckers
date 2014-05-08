@@ -4,10 +4,10 @@ using System.Collections;
 public class GamePieceScript : MonoBehaviour {
 
 	public bool isDead;
-	public bool isMoving;
 	public Vector2 location;
 	public Color color;
 	public bool isKing;
+	public int player;
 
 	// Use this for initialization
 	void Start () {
@@ -19,8 +19,13 @@ public class GamePieceScript : MonoBehaviour {
 	void Update () {
 	
 	}
-	public void setColor(Color c){
-		color = c;
+	public void setColor(int player){
+		this.player = player;
+		if(player==1){
+			color = Color.red;
+		}else{
+			color = Color.grey;
+		}
 		transform.gameObject.renderer.material.color = color;
 	}
 	public void focus(){
@@ -31,5 +36,12 @@ public class GamePieceScript : MonoBehaviour {
 	}
 	public void resetColor(){
 		transform.gameObject.renderer.material.color = color;
+	}
+	public void die(){
+		isDead = true;
+		Destroy (this.gameObject);
+	}
+	public void makeKing(){
+		isKing = true;
 	}
 }
