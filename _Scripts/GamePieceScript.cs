@@ -22,9 +22,9 @@ public class GamePieceScript : MonoBehaviour {
 	public void setColor(int player){
 		this.player = player;
 		if(player==1){
-			color = Color.red;
+			color = Color.black;
 		}else{
-			color = Color.grey;
+			color = Color.red;
 		}
 		transform.gameObject.renderer.material.color = color;
 	}
@@ -32,7 +32,7 @@ public class GamePieceScript : MonoBehaviour {
 		transform.gameObject.renderer.material.color = Color.cyan;
 	}
 	public void select(){
-		transform.gameObject.renderer.material.color = Color.red;
+		transform.gameObject.renderer.material.color = Color.magenta;
 	}
 	public void resetColor(){
 		transform.gameObject.renderer.material.color = color;

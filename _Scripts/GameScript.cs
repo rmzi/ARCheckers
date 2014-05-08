@@ -12,10 +12,12 @@ public class GameScript : MonoBehaviour
 	private Player player2;
 	private Transform board;
 	private ArrayList lastMove;
+	private bool showingMoves;
+	private ArrayList highlightedCubes;
 
 	// Use this for initialization
 	void Start () {
-
+		showingMoves = false;
 		gameBoard	= new CubeSpaceScript[8,8];
 		boardPieces = new Transform[8,8];
 		player1 = new Player(1);
@@ -24,7 +26,31 @@ public class GameScript : MonoBehaviour
 		turn = 1;
 		lastMove = new ArrayList ();
 	}
+	public void showMoves(GamePieceScript piece){
+		Debug.Log ("Piece Spot:"+piece.location.ToString());
+		CheckersMove[] moves = getLegalMoves(turn);
+		ArrayList myMoves = new ArrayList ();
+		foreach (CheckersMove move in moves) {
+			/*gameBoard[move.toRow,move.toCol].highlight();
+			gameBoard[move.fromRow,move.fromCol].fromHightlight();
+			myMoves.Add(gameBoard[move.toRow,move.toCol]);
+			myMoves.Add(gameBoard[move.fromRow,move.fromCol]);*/
+			if(move.fromCol == piece.location.y && move.fromRow == piece.location.x){
+				gameBoard[move.toRow,move.toCol].highlight();
+				gameBoard[move.fromRow,move.fromCol].fromHightlight();
+				myMoves.Add(gameBoard[move.toRow,move.toCol]);
+				myMoves.Add(gameBoard[move.fromRow,move.fromCol]);
+			}
+		}
+		highlightedCubes = myMoves;
 
+	}
+	public void stopShowingMoves(){
+		foreach (Object cube in highlightedCubes) {
+			CubeSpaceScript tmpCube = (CubeSpaceScript) cube;
+			tmpCube.resetColor();
+		}
+	}
 	public void makeBoard(){
 			int boardSize = 8;
 			for(int i = 0; i < boardSize; i++){
@@ -46,6 +72,7 @@ public class GameScript : MonoBehaviour
 							Transform newGamePiece = (Transform)Instantiate(gamePiecePrefab, nextLocation + offset, Quaternion.identity);
 							newGamePiece.parent = board;
 							newGamePiece.GetComponent<GamePieceScript>().location = currLoc;
+							
 							if(i<4){
 								gameBoard[i,j].setPiece(newGamePiece.GetComponent<GamePieceScript>());
 								player1.addPiece(newGamePiece);
@@ -63,7 +90,10 @@ public class GameScript : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-	
+	}
+
+	public void makeMove(CheckersMove move){
+
 	}
 	public class Player{
 		public static int turn=1;
@@ -93,8 +123,8 @@ public class GameScript : MonoBehaviour
 	}
 	//A move in checkers
 	public class CheckersMove {
-		int fromRow, fromCol;  // Position of piece to be moved.
-		int toRow, toCol;      // Square it is to move to.
+		public int fromRow, fromCol;  // Position of piece to be moved.
+		public int toRow, toCol;      // Square it is to move to.
 		public CheckersMove(int r1, int c1, int r2, int c2) {
 			// Constructor.  Just set the values of the instance variables.
 			fromRow = r1;
@@ -109,7 +139,6 @@ public class GameScript : MonoBehaviour
 			return (fromRow - toRow == 2 || fromRow - toRow == -2);
 		}
 	}
-
 	public CheckersMove[] getLegalMoves(int player) {
 		ArrayList moves = new ArrayList();  // Moves will be stored in this list.
 		if (this.turn == player1.player) {
@@ -233,14 +262,14 @@ public class GameScript : MonoBehaviour
 			return false;  // (r3,c3) already contains a piece.
 		
 		if (player == player1.player) {
-			if (gameBoard[r1,c1].getPiece()!=null && gameBoard[r1,c1].getPiece().player == player1.player && r3 > r1)
-				return false;  // Regular red piece can only move up.
+			if (gameBoard[r1,c1].getPiece().isKing==false && r3 < r1)
+				return false;  // Regular black piece can only move up.
 			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().player != player2.player)
 				return false;  // There is no black piece to jump.
 			return true;  // The jump is legal.
 		}
 		else {
-			if (gameBoard[r1,c1].getPiece()!=null && gameBoard[r1,c1].getPiece().player == player2.player && r3 < r1)
+			if (gameBoard[r1,c1].getPiece().isKing==false && r3 > r1)
 				return false;  // Regular black piece can only move downn.
 			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().player!= player1.player)
 				return false;  // There is no red piece to jump.

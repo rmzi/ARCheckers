@@ -10,12 +10,15 @@ public class CubeSpaceScript : MonoBehaviour {
 	private GamePieceScript piece;
 	private bool isValid;
 	private Color highlightColor;
+	private Color fromColor;
 	Vector2 boardSpot;
 	void Start () {
 		isOccupied = false;
 		transform.tag = "space";
 		this.makeInvalid ();
 		piece = null;
+		highlightColor = Color.yellow;
+		fromColor = Color.grey;
 	}
 	
 	// Update is called once per frame
@@ -53,6 +56,9 @@ public class CubeSpaceScript : MonoBehaviour {
 	public void highlight(){
 		transform.gameObject.renderer.material.color = highlightColor;
 	}
+	public void fromHightlight(){
+		transform.gameObject.renderer.material.color = fromColor;
+	}
 	public void setSpace(Vector2 loc){
 		boardSpot = loc;
 	}
@@ -70,9 +76,9 @@ public class CubeSpaceScript : MonoBehaviour {
 	public void resetColor(){
 		transform.gameObject.renderer.material.color = color;
 	}
-	public void setPiece(GamePieceScript piece){
+	public void setPiece(Transform piece){
 		isOccupied = true;
-		this.piece = piece;
+		this.piece = piece.GetComponent<GamePieceScript>();
 	}
 	public GamePieceScript getPiece(){
 		return this.piece;

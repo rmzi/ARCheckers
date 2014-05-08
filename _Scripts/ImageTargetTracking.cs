@@ -27,7 +27,7 @@ public class ImageTargetTracking : MonoBehaviour, ITrackableEventHandler {
 			
 			OnTrackingFound();
 			if(!targetFound){
-				Debug.Log("Using this one!");
+				Debug.Log("Target Found!");
 				targetFound = true;
 			}
 		}

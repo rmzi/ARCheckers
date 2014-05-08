@@ -70,8 +70,15 @@ public class ARCameraController : MonoBehaviour{
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
-		height = Screen.width;
-		width = Screen.height;
+
+		// DESKTOP DEBUG
+		height = Screen.height;
+		width = Screen.width;
+
+		// PHONE DEBUG
+		//height = Screen.width;
+		//width = Screen.height;
+
 		focusedObject = null;
 		selectedObject = null;
 		p1 = false;
@@ -81,13 +88,15 @@ public class ARCameraController : MonoBehaviour{
 		lowMode = INIT_MODE;
 		turn = new GUIStyle ();
 		turn.normal.textColor = Color.black;
+		//jose test
+		turn.fontSize = 25;
 		game = Board.GetComponent<GameScript> ();
 	}
 
 
 	// Update is called once per frame
 	void Update () {
-		if (!targetFound) {
+		if(!targetFound) {
 			targetFound = ImageTarget.GetComponent<ImageTargetTracking> ().targetFound;
 			if(targetFound){
 				lowMode = START_MODE;
@@ -152,6 +161,8 @@ public class ARCameraController : MonoBehaviour{
 	}
 	
 	void OnGUI () {
+		GUI.Label((new Rect (((width/2)-50),30, 150, 50)),"High Mode" + highMode, turn);
+		GUI.Label((new Rect (((width/2)-50),50, 150, 50)),"Low Mode" + lowMode, turn);
 		if (highMode == PREGAME_MODE){
 			// PREGAME MODE
 			if(lowMode == INIT_MODE){
@@ -161,7 +172,7 @@ public class ARCameraController : MonoBehaviour{
 			}else if(lowMode == START_MODE){
 			// START MODE
 			// Prompt user to start game
-				if (GUI.Button (new Rect ((width/2), (height-100), 150, 100), "START")) {
+				if (GUI.Button (new Rect ((width/2), (height/2), 150, 100), "START")) {
 					lowMode = INSTR_MODE;
 				}
 			}else if(lowMode == INSTR_MODE){
@@ -193,22 +204,26 @@ public class ARCameraController : MonoBehaviour{
 						selectedObject = focusedObject;
 						lowMode = MOVE_MODE;
 						selectedObject.GetComponent<GamePieceScript>().select();
+						game.showMoves(selectedObject.GetComponent<GamePieceScript>());
 					}
 				}
 				/////////////////
 				// Translation //
 				/////////////////
-				if (GUI.RepeatButton (new Rect ((width-100), (height-100), 100, 100), "Explore")) {
+				if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "Explore")) {
 					highMode = EXPLORE_MODE;
 				}
 				
 				/////////////////
 				//   NewGame   //
 				/////////////////
-				if (GUI.RepeatButton (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
+				if (GUI.Button (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
 					//translateMode = true;
 				}
+				//
+				if (GUI.Button (new Rect ((width-250), (height-200), 150, 100), "Show Moves")) {
 
+				}
 
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
@@ -217,6 +232,7 @@ public class ARCameraController : MonoBehaviour{
 					lowMode = SEL_MODE;
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
 					selectedObject = null;
+					game.stopShowingMoves();
 				}
 				
 				/////////////////
@@ -256,12 +272,12 @@ public class ARCameraController : MonoBehaviour{
 		if (p1) {
 
 			turn.normal.textColor = Color.magenta;
-			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 1", turn);
+			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN BLACK", turn);
 			p2 = false;
 		}
 		if (p2) {
 			turn.normal.textColor = Color.magenta;
-			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 2", turn);
+			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN RED", turn);
 			p1 = false;
 		}
 		int number = 8;
