@@ -7,7 +7,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	private Color color;
 	public bool isOccupied;
 	public GameScript game;
-	private GamePieceScript piece;
+	private Transform piece;
 	private bool isValid;
 	private Color highlightColor;
 	private Color fromColor;
@@ -78,9 +78,9 @@ public class CubeSpaceScript : MonoBehaviour {
 	}
 	public void setPiece(Transform piece){
 		isOccupied = true;
-		this.piece = piece.GetComponent<GamePieceScript>();
+		this.piece = piece;
 	}
-	public GamePieceScript getPiece(){
+	public Transform getPiece(){
 		return this.piece;
 	}
 	public void unOccupy(){

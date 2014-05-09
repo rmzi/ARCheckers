@@ -14,6 +14,7 @@ public class GameScript : MonoBehaviour
 	private ArrayList lastMove;
 	private bool showingMoves;
 	private ArrayList highlightedCubes;
+	private Vector2 currLoc;
 
 	// Use this for initialization
 	void Start () {
@@ -55,7 +56,7 @@ public class GameScript : MonoBehaviour
 			int boardSize = 8;
 			for(int i = 0; i < boardSize; i++){
 				for(int j = 0; j < boardSize; j++){
-					Vector2 currLoc = new Vector2((float)i,(float)j);
+					currLoc = new Vector2((float)i,(float)j);
 					Vector3 nextLocation = new Vector3(-35 + 10f * i, 0, -35 + 10f * j);
 					boardPieces[i,j] = (Transform)Instantiate(boardPiecePrefab, nextLocation, Quaternion.identity);
 					boardPieces[i,j].parent = board;
@@ -74,10 +75,10 @@ public class GameScript : MonoBehaviour
 							newGamePiece.GetComponent<GamePieceScript>().location = currLoc;
 							
 							if(i<4){
-								gameBoard[i,j].setPiece(newGamePiece.GetComponent<GamePieceScript>());
+								gameBoard[i,j].setPiece(newGamePiece);
 								player1.addPiece(newGamePiece);
 							}else{
-								gameBoard[i,j].setPiece(newGamePiece.GetComponent<GamePieceScript>());
+								gameBoard[i,j].setPiece(newGamePiece);
 								player2.addPiece(newGamePiece);
 							}
 						}
@@ -225,7 +226,7 @@ public class GameScript : MonoBehaviour
 			return null;
 
 		ArrayList moves = new ArrayList();  // The legal jumps will be stored in this list.
-		if (gameBoard[row,col].getPiece().player == player) {
+		if (gameBoard[row,col].getPiece().GetComponent<GamePieceScript>().player == player) {
 			if (canJump(player, row, col, row+1, col+1, row+2, col+2))
 				moves.Add(new CheckersMove(row, col, row+2, col+2));
 			if (canJump(player, row, col, row-1, col+1, row-2, col+2))
@@ -262,16 +263,20 @@ public class GameScript : MonoBehaviour
 			return false;  // (r3,c3) already contains a piece.
 		
 		if (player == player1.player) {
-			if (gameBoard[r1,c1].getPiece().isKing==false && r3 < r1)
+			if (gameBoard[r1,c1].getPiece().GetComponent<GamePieceScript>().isKing==false && r3 < r1)
 				return false;  // Regular black piece can only move up.
-			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().player != player2.player)
+			else
+				Debug.Log("not a regular piece");
+			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().GetComponent<GamePieceScript>().player != player2.player)
 				return false;  // There is no black piece to jump.
 			return true;  // The jump is legal.
 		}
 		else {
-			if (gameBoard[r1,c1].getPiece().isKing==false && r3 > r1)
+			if (gameBoard[r1,c1].getPiece().GetComponent<GamePieceScript>().isKing==false && r3 > r1)
 				return false;  // Regular black piece can only move downn.
-			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().player!= player1.player)
+			else
+				Debug.Log("not a regular piece");
+			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().GetComponent<GamePieceScript>().player!= player1.player)
 				return false;  // There is no red piece to jump.
 			return true;  // The jump is legal.
 		}
@@ -293,11 +298,11 @@ public class GameScript : MonoBehaviour
 				return false;  // (r2,c2) already contains a piece.
 
 		if (player == player1.player) {
-				if (gameBoard [r1, c1].getPiece ().player == player1.player && r2 > r1)
+			if (gameBoard [r1, c1].getPiece ().GetComponent<GamePieceScript>().player == player1.player && r2 > r1)
 						return false;  // Regular red piece can only move down.
 				return true;  // The move is legal.
 		} else {
-				if (gameBoard [r1, c1].getPiece ().player == player2.player && r2 < r1)
+			if (gameBoard [r1, c1].getPiece ().GetComponent<GamePieceScript>().player == player2.player && r2 < r1)
 						return false;  // Regular black piece can only move up.
 				return true;  // The move is legal.
 		}
