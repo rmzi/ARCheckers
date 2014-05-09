@@ -6,6 +6,8 @@ using System.Collections;
 public class ARCameraController : MonoBehaviour{
 	//GameScript
 	private GameScript game;
+	//joystick
+	public Transform joystick;
 
 	// Modes
 	// Modes will determine which code to run to increase efficiency of calculations
@@ -43,6 +45,7 @@ public class ARCameraController : MonoBehaviour{
 	public GUIStyle turn;
 	public GUIStyle redP2;
 	public GUIStyle redP1;
+	public GUIStyle wrap; //used to wrap text
 
 	//Screen dimensions
 	private int height;
@@ -86,10 +89,10 @@ public class ARCameraController : MonoBehaviour{
 		targetFound = false;
 		highMode = PREGAME_MODE;
 		lowMode = INIT_MODE;
-		turn = new GUIStyle ();
-		turn.normal.textColor = Color.black;
+		//turn = new GUIStyle ();
+		//turn.normal.textColor = Color.black;
 		//jose test
-		turn.fontSize = 25;
+		//turn.fontSize = 25;
 		game = Board.GetComponent<GameScript> ();
 	}
 
@@ -178,8 +181,10 @@ public class ARCameraController : MonoBehaviour{
 			}else if(lowMode == INSTR_MODE){
 			//
 				turn.normal.textColor = Color.magenta;
+				wrap.normal.textColor = Color.magenta;
 				GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"INSTRUCTIONS", turn);
-				GUI.Label((new Rect (((width/5)-50),50, 550, 300)),"Black moves first. Players then alternate moves.Moves are allowed only on\nthe dark squares, so pieces always move diagonally. Single pieces are\nalways limited to forward moves (toward the opponent). A piece making a non-capturing\nmove (not involving a jump) may move only one square. A piece making a capturing \nmove (a jump) leaps over one of the opponent's pieces, landing in a straight \ndiagonal line on the other side. Only one piece may be captured in a single jump; \nhowever, multiple jumps are allowed on a single turn.When a piece is captured, it is \nremoved from the board.If a player is able to make a capture, there is no option -- the \njump must be made. If more than one capture is available, the player is free \nto choose whichever he or she prefers.When a piece reaches the furthest row from the player \nwho controls that piece, it is crowned and becomes a king. One of the pieces which \nhad been captured is placed on top of the king so that it is twice as high as a single \npiece. Kings are limited to moving diagonally, but may move both forward and backward. \n(Remember that single pieces, i.e. non-kings, are always limited to forward moves.)\nKings may combine jumps in several directions -- forward and backward -- on the same turn. \nSingle pieces may shift direction diagonally during a multiple capture turn, but must \nalways jump forward (toward the opponent). A player wins the game when the opponent cannot make a move. \nIn most cases, this is because all of the opponent's pieces have been captured, but it \ncould also be because all of his pieces are blocked in.", turn);
+				wrap.wordWrap = true;
+				GUI.Label((new Rect (((width/5)-50),100, (width-200), (height-200))),"Black moves first. Players then alternate moves.Moves are allowed only on the dark squares, so pieces always move diagonally. Single pieces are always limited to forward moves (toward the opponent). A piece making a non-capturing move (not involving a jump) may move only one square. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.When a piece is captured, it is removed from the board.If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent). A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.",wrap);
 				if (GUI.Button (new Rect ((width/2), (height-100), 150, 100), "Continue")) {
 					highMode = PLAY_MODE;
 					lowMode = SEL_MODE;
@@ -212,6 +217,7 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "Explore")) {
 					highMode = EXPLORE_MODE;
+
 				}
 				
 				/////////////////
@@ -247,7 +253,7 @@ public class ARCameraController : MonoBehaviour{
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
 			// Translation via Joystick
-
+			joystick = (Transform)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 			/////////////////
 			// Translation //
 			/////////////////
@@ -324,4 +330,5 @@ public class ARCameraController : MonoBehaviour{
 		selectedObject = null;
 		sysinfo.text = "Approach a game piece to select it.";
 	}
+
 }

@@ -11,6 +11,8 @@ public class GameScript : MonoBehaviour
 	private Player player1;
 	private Player player2;
 	private Transform board;
+	private Transform redTray;
+	private Transform blackTray;
 	private ArrayList lastMove;
 	private bool showingMoves;
 	private ArrayList highlightedCubes;
@@ -24,6 +26,8 @@ public class GameScript : MonoBehaviour
 		player1 = new Player(1);
 		player2 = new Player(2);
 		board = GameObject.FindGameObjectWithTag ("Board").transform;
+		redTray = GameObject.FindGameObjectWithTag ("redTray").transform;
+		blackTray = GameObject.FindGameObjectWithTag ("blackTray").transform;
 		turn = 1;
 		lastMove = new ArrayList ();
 	}
@@ -85,7 +89,9 @@ public class GameScript : MonoBehaviour
 					}
 				}
 			}
-		
+		//make trays
+		redTray.renderer.material.color = Color.red;
+		blackTray.renderer.material.color = Color.black;
 
 	}
 	
