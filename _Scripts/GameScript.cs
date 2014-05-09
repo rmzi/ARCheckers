@@ -7,7 +7,7 @@ public class GameScript : MonoBehaviour
 	public Transform gamePiecePrefab;
 	private Transform[,] boardPieces;
 	private CubeSpaceScript[,] gameBoard;
-	private int turn;
+	public int turn;
 	private Player player1;
 	private Player player2;
 	private Transform board;
@@ -19,6 +19,7 @@ public class GameScript : MonoBehaviour
 	// Use this for initialization
 	void Start () {
 		showingMoves = false;
+		highlightedCubes = new ArrayList ();
 		gameBoard	= new CubeSpaceScript[8,8];
 		boardPieces = new Transform[8,8];
 		player1 = new Player(1);
@@ -27,29 +28,29 @@ public class GameScript : MonoBehaviour
 		turn = 1;
 		lastMove = new ArrayList ();
 	}
-	public void showMoves(GamePieceScript piece){
-		Debug.Log ("Piece Spot:"+piece.location.ToString());
+	public void showMoves(Transform piece){
+		Debug.Log ("Piece Spot:"+piece.GetComponent<GamePieceScript>().location.ToString());
 		CheckersMove[] moves = getLegalMoves(turn);
-		ArrayList myMoves = new ArrayList ();
 		foreach (CheckersMove move in moves) {
 			/*gameBoard[move.toRow,move.toCol].highlight();
 			gameBoard[move.fromRow,move.fromCol].fromHightlight();
 			myMoves.Add(gameBoard[move.toRow,move.toCol]);
 			myMoves.Add(gameBoard[move.fromRow,move.fromCol]);*/
-			if(move.fromCol == piece.location.y && move.fromRow == piece.location.x){
+			if(move.fromCol == piece.GetComponent<GamePieceScript>().location.y && move.fromRow == piece.GetComponent<GamePieceScript>().location.x){
 				gameBoard[move.toRow,move.toCol].highlight();
 				gameBoard[move.fromRow,move.fromCol].fromHightlight();
-				myMoves.Add(gameBoard[move.toRow,move.toCol]);
-				myMoves.Add(gameBoard[move.fromRow,move.fromCol]);
+				highlightedCubes.Add(gameBoard[move.toRow,move.toCol]);
+				highlightedCubes.Add(gameBoard[move.fromRow,move.fromCol]);
 			}
 		}
-		highlightedCubes = myMoves;
-
 	}
 	public void stopShowingMoves(){
-		foreach (Object cube in highlightedCubes) {
-			CubeSpaceScript tmpCube = (CubeSpaceScript) cube;
-			tmpCube.resetColor();
+		if (highlightedCubes.Count != 0) {
+			foreach (Object cube in highlightedCubes) {
+				CubeSpaceScript tmpCube = (CubeSpaceScript) cube;
+				tmpCube.resetColor();
+			}
+			highlightedCubes.Clear();
 		}
 	}
 	public void makeBoard(){
@@ -263,20 +264,20 @@ public class GameScript : MonoBehaviour
 			return false;  // (r3,c3) already contains a piece.
 		
 		if (player == player1.player) {
-			if (gameBoard[r1,c1].getPiece().GetComponent<GamePieceScript>().isKing==false && r3 < r1)
+			if (boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false && r3 < r1)
 				return false;  // Regular black piece can only move up.
 			else
 				Debug.Log("not a regular piece");
-			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().GetComponent<GamePieceScript>().player != player2.player)
+			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player != player2.player)
 				return false;  // There is no black piece to jump.
 			return true;  // The jump is legal.
 		}
 		else {
-			if (gameBoard[r1,c1].getPiece().GetComponent<GamePieceScript>().isKing==false && r3 > r1)
+			if (boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false && r3 > r1)
 				return false;  // Regular black piece can only move downn.
 			else
 				Debug.Log("not a regular piece");
-			if (gameBoard[r2,c2].getPiece()!=null && gameBoard[r2,c2].getPiece().GetComponent<GamePieceScript>().player!= player1.player)
+			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && gameBoard[r2,c2].getPiece().GetComponent<GamePieceScript>().player!= player1.player)
 				return false;  // There is no red piece to jump.
 			return true;  // The jump is legal.
 		}
