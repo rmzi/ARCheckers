@@ -7,7 +7,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	private Color color;
 	public bool isOccupied;
 	public GameScript game;
-	private Transform piece;
+	public GameObject piece;
 	private bool isValid;
 	private Color highlightColor;
 	private Color fromColor;
@@ -76,11 +76,11 @@ public class CubeSpaceScript : MonoBehaviour {
 	public void resetColor(){
 		transform.gameObject.renderer.material.color = color;
 	}
-	public void setPiece(Transform piece){
+	public void setPiece(GameObject piece){
 		isOccupied = true;
 		this.piece = piece;
 	}
-	public Transform getPiece(){
+	public GameObject getPiece(){
 		return this.piece;
 	}
 	public void unOccupy(){

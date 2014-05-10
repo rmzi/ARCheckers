@@ -5,14 +5,13 @@ public class GameScript : MonoBehaviour
 {
 	public Transform boardPiecePrefab;
 	public Transform gamePiecePrefab;
-	private Transform[,] boardPieces;
-	private CubeSpaceScript[,] gameBoard;
+	private GameObject[,] boardPieces;
 	public int turn;
 	private Player player1;
 	private Player player2;
-	private Transform board;
-	private Transform redTray;
-	private Transform blackTray;
+	private GameObject board;
+	private GameObject redTray;
+	private GameObject blackTray;
 	private ArrayList lastMove;
 	private bool showingMoves;
 	private ArrayList highlightedCubes;
@@ -22,13 +21,12 @@ public class GameScript : MonoBehaviour
 	void Start () {
 		showingMoves = false;
 		highlightedCubes = new ArrayList ();
-		gameBoard	= new CubeSpaceScript[8,8];
-		boardPieces = new Transform[8,8];
+		boardPieces = new GameObject[8, 8];
 		player1 = new Player(1);
 		player2 = new Player(2);
-		board = GameObject.FindGameObjectWithTag ("Board").transform;
-		redTray = GameObject.FindGameObjectWithTag ("redTray").transform;
-		blackTray = GameObject.FindGameObjectWithTag ("blackTray").transform;
+		board = GameObject.FindGameObjectWithTag ("Board");
+		redTray = GameObject.FindGameObjectWithTag ("redTray");
+		blackTray = GameObject.FindGameObjectWithTag ("blackTray");
 		turn = 1;
 		lastMove = new ArrayList ();
 	}
@@ -36,22 +34,18 @@ public class GameScript : MonoBehaviour
 		Debug.Log ("Piece Spot:"+piece.GetComponent<GamePieceScript>().location.ToString());
 		CheckersMove[] moves = getLegalMoves(turn);
 		foreach (CheckersMove move in moves) {
-			/*gameBoard[move.toRow,move.toCol].highlight();
-			gameBoard[move.fromRow,move.fromCol].fromHightlight();
-			myMoves.Add(gameBoard[move.toRow,move.toCol]);
-			myMoves.Add(gameBoard[move.fromRow,move.fromCol]);*/
 			if(move.fromCol == piece.GetComponent<GamePieceScript>().location.y && move.fromRow == piece.GetComponent<GamePieceScript>().location.x){
-				gameBoard[move.toRow,move.toCol].highlight();
-				gameBoard[move.fromRow,move.fromCol].fromHightlight();
-				highlightedCubes.Add(gameBoard[move.toRow,move.toCol]);
-				highlightedCubes.Add(gameBoard[move.fromRow,move.fromCol]);
+				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().highlight();
+				boardPieces[move.fromRow,move.fromCol].GetComponent<CubeSpaceScript>().fromHightlight();
+				highlightedCubes.Add(boardPieces[move.toRow,move.toCol]);
+				highlightedCubes.Add(boardPieces[move.fromRow,move.fromCol]);
 			}
 		}
 	}
 	public void stopShowingMoves(){
 		if (highlightedCubes.Count != 0) {
 			foreach (Object cube in highlightedCubes) {
-				CubeSpaceScript tmpCube = (CubeSpaceScript) cube;
+				CubeSpaceScript tmpCube = ((GameObject)cube).GetComponent<CubeSpaceScript>();
 				tmpCube.resetColor();
 			}
 			highlightedCubes.Clear();
@@ -63,28 +57,28 @@ public class GameScript : MonoBehaviour
 				for(int j = 0; j < boardSize; j++){
 					currLoc = new Vector2((float)i,(float)j);
 					Vector3 nextLocation = new Vector3(-35 + 10f * i, 0, -35 + 10f * j);
-					boardPieces[i,j] = (Transform)Instantiate(boardPiecePrefab, nextLocation, Quaternion.identity);
-					boardPieces[i,j].parent = board;
+					Transform newPiece = Instantiate(boardPiecePrefab, nextLocation, Quaternion.identity) as Transform;
+					newPiece.parent = board.transform;
+					boardPieces[i,j] = newPiece.gameObject;
 					if((i + j) % 2 == 0){
-						gameBoard[i,j] = boardPieces[i,j].GetComponent<CubeSpaceScript> ();
-						gameBoard[i,j].setColor(Color.red);
-						gameBoard[i,j].setSpace(currLoc);
+						CubeSpaceScript script = boardPieces[i,j].GetComponent<CubeSpaceScript> ();
+						script.setColor(Color.red);
+						script.setSpace(currLoc);
 					} else {
-						gameBoard[i,j] = boardPieces[i,j].GetComponent<CubeSpaceScript> ();
-						gameBoard[i,j].setColor(Color.black);
-						gameBoard[i,j].setSpace(currLoc);
+						CubeSpaceScript script = boardPieces[i,j].GetComponent<CubeSpaceScript> ();
+						script.setColor(Color.black);
+						script.setSpace(currLoc);
 						if(i!=3 && i!=4){
 							Vector3 offset = new Vector3(0,10,0);
-							Transform newGamePiece = (Transform)Instantiate(gamePiecePrefab, nextLocation + offset, Quaternion.identity);
-							newGamePiece.parent = board;
-							newGamePiece.GetComponent<GamePieceScript>().location = currLoc;
-							
+							Transform newGamePiece = Instantiate(gamePiecePrefab, nextLocation + offset, Quaternion.identity) as Transform;
+							newGamePiece.parent = board.transform;
+							newGamePiece.gameObject.GetComponent<GamePieceScript>().location = currLoc;
 							if(i<4){
-								gameBoard[i,j].setPiece(newGamePiece);
-								player1.addPiece(newGamePiece);
+								boardPieces[i,j].GetComponent<CubeSpaceScript> ().setPiece(newGamePiece.gameObject);
+								player1.addPiece(newGamePiece.gameObject);
 							}else{
-								gameBoard[i,j].setPiece(newGamePiece);
-								player2.addPiece(newGamePiece);
+								boardPieces[i,j].GetComponent<CubeSpaceScript> ().setPiece(newGamePiece.gameObject);
+								player2.addPiece(newGamePiece.gameObject);
 							}
 						}
 					}
@@ -93,6 +87,8 @@ public class GameScript : MonoBehaviour
 		//make trays
 		redTray.renderer.material.color = Color.red;
 		blackTray.renderer.material.color = Color.black;
+
+		Debug.Log (boardPieces);
 
 	}
 	
@@ -103,24 +99,22 @@ public class GameScript : MonoBehaviour
 	public void makeMove(CheckersMove move){
 
 	}
+
 	public class Player{
-		public static int turn=1;
+		public static int turn = 1;
 		//player number
 		public int player;
 		//pieces that belong to the player
-		public GamePieceScript[] pieces;
-		public Transform[] piecesTransform;
+		public GameObject[] pieces;
 		public int numPieces;
 		public Player(int p){
 			player = p;
 			numPieces = 0;
-			pieces = new GamePieceScript[12];
-			piecesTransform = new Transform[12];
+			pieces = new GameObject[12];
 		}
-		public void addPiece(Transform p){
-			pieces[numPieces]=p.GetComponent<GamePieceScript> ();
-			pieces[numPieces].setColor (player);
-			piecesTransform [numPieces] = p;
+		public void addPiece(GameObject p){
+			pieces[numPieces] = p;
+			pieces[numPieces].GetComponent<GamePieceScript>().setColor(player);
 			numPieces++;
 		}
 		//public
@@ -129,6 +123,7 @@ public class GameScript : MonoBehaviour
 			return false;
 		}
 	}
+
 	//A move in checkers
 	public class CheckersMove {
 		public int fromRow, fromCol;  // Position of piece to be moved.
@@ -147,12 +142,15 @@ public class GameScript : MonoBehaviour
 			return (fromRow - toRow == 2 || fromRow - toRow == -2);
 		}
 	}
+
 	public CheckersMove[] getLegalMoves(int player) {
 		ArrayList moves = new ArrayList();  // Moves will be stored in this list.
 		if (this.turn == player1.player) {
-			foreach(GamePieceScript piece in player1.pieces){
-				int row = (int) piece.location.x;
-				int col = (int) piece.location.y;
+			// Player1
+
+			foreach(GameObject piece in player1.pieces){
+				int row = (int) piece.GetComponent<GamePieceScript>().location.x;
+				int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
 				if (canJump(player, row, col, row+1, col+1, row+2, col+2))
 					moves.Add(new CheckersMove(row, col, row+2, col+2));
 				if (canJump(player, row, col, row-1, col+1, row-2, col+2))
@@ -162,10 +160,13 @@ public class GameScript : MonoBehaviour
 				if (canJump(player, row, col, row-1, col-1, row-2, col-2))
 					moves.Add(new CheckersMove(row, col, row-2, col-2));
 			}
+			// FORCE MOVE 
+			// If there are no valid jumps in the possible moveset,
+			// Test single space moves.
 			if (moves.Count == 0) {
-				foreach(GamePieceScript piece in player1.pieces){
-					int row = (int) piece.location.x;
-					int col = (int) piece.location.y;
+				foreach(GameObject piece in player1.pieces){
+					int row = (int) piece.GetComponent<GamePieceScript> ().location.x;
+					int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
 					if (canMove(player,row,col,row+1,col+1))
 						moves.Add(new CheckersMove(row,col,row+1,col+1));
 					if (canMove(player,row,col,row-1,col+1))
@@ -185,9 +186,10 @@ public class GameScript : MonoBehaviour
 				return moveArray;
 			}
 		}else{
-			foreach(GamePieceScript piece in player2.pieces){
-				int row = (int) piece.location.x;
-				int col = (int) piece.location.y;
+			// Player2
+			foreach(GameObject piece in player2.pieces){
+				int row = (int) piece.GetComponent<GamePieceScript> ().location.x;
+				int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
 				if (canJump(player, row, col, row+1, col+1, row+2, col+2))
 					moves.Add(new CheckersMove(row, col, row+2, col+2));
 				if (canJump(player, row, col, row-1, col+1, row-2, col+2))
@@ -198,9 +200,9 @@ public class GameScript : MonoBehaviour
 					moves.Add(new CheckersMove(row, col, row-2, col-2));
 			}
 			if (moves.Count == 0) {
-				foreach(GamePieceScript piece in player2.pieces){
-					int row = (int) piece.location.x;
-					int col = (int) piece.location.y;
+				foreach(GameObject piece in player2.pieces){
+					int row = (int) piece.GetComponent<GamePieceScript> ().location.x;
+					int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
 					if (canMove(player,row,col,row+1,col+1))
 						moves.Add(new CheckersMove(row,col,row+1,col+1));
 					if (canMove(player,row,col,row-1,col+1))
@@ -233,7 +235,7 @@ public class GameScript : MonoBehaviour
 			return null;
 
 		ArrayList moves = new ArrayList();  // The legal jumps will be stored in this list.
-		if (gameBoard[row,col].getPiece().GetComponent<GamePieceScript>().player == player) {
+		if (boardPieces[row,col].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player) {
 			if (canJump(player, row, col, row+1, col+1, row+2, col+2))
 				moves.Add(new CheckersMove(row, col, row+2, col+2));
 			if (canJump(player, row, col, row-1, col+1, row-2, col+2))
@@ -266,11 +268,11 @@ public class GameScript : MonoBehaviour
 		if (r3 < 0 || r3 >= 8 || c3 < 0 || c3 >= 8)
 			return false; 
 		
-		if (gameBoard[r3,c3].isOccupied)
+		if (boardPieces[r3,c3].GetComponent<CubeSpaceScript>().isOccupied)
 			return false;  // (r3,c3) already contains a piece.
 		
 		if (player == player1.player) {
-			if (boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false && r3 < r1)
+			if (r3 < r1 && boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false)
 				return false;  // Regular black piece can only move up.
 			else
 				Debug.Log("not a regular piece");
@@ -283,7 +285,7 @@ public class GameScript : MonoBehaviour
 				return false;  // Regular black piece can only move downn.
 			else
 				Debug.Log("not a regular piece");
-			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && gameBoard[r2,c2].getPiece().GetComponent<GamePieceScript>().player!= player1.player)
+			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player!= player1.player)
 				return false;  // There is no red piece to jump.
 			return true;  // The jump is legal.
 		}
@@ -301,15 +303,15 @@ public class GameScript : MonoBehaviour
 		if (r2 < 0 || r2 >= 8 || c2 < 0 || c2 >= 8)
 				return false;  // (r2,c2) is off the board.
 
-		if (gameBoard [r2, c2].isOccupied)
+		if (boardPieces[r2, c2].GetComponent<CubeSpaceScript>().isOccupied)
 				return false;  // (r2,c2) already contains a piece.
 
 		if (player == player1.player) {
-			if (gameBoard [r1, c1].getPiece ().GetComponent<GamePieceScript>().player == player1.player && r2 > r1)
+			if (boardPieces[r1, c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player1.player && r2 > r1)
 						return false;  // Regular red piece can only move down.
 				return true;  // The move is legal.
 		} else {
-			if (gameBoard [r1, c1].getPiece ().GetComponent<GamePieceScript>().player == player2.player && r2 < r1)
+			if (boardPieces[r1, c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player2.player && r2 < r1)
 						return false;  // Regular black piece can only move up.
 				return true;  // The move is legal.
 		}

@@ -35,7 +35,12 @@ public class ARCameraController : MonoBehaviour{
 	//Variables containing current modes for GAME
 	public int highMode;
 	public int lowMode;
-	
+
+	// Pass Mode 
+	private Vector2 referenceRay = new Vector2(1f,0f);
+	private Vector3 rayToCamera;
+	private float radialAngle;
+
 	//GameObjects
 	public GameObject ImageTarget;
 	public GameObject Board;
@@ -47,7 +52,7 @@ public class ARCameraController : MonoBehaviour{
 	public GUIStyle redP2;
 	public GUIStyle redP1;
 	public GUIStyle wrap; //used to wrap text
-
+	
 	//Screen dimensions
 	private int height;
 	private int width;
@@ -166,7 +171,20 @@ public class ARCameraController : MonoBehaviour{
 			} else if(lowMode == MOVE_MODE){
 				selectedObject.transform.position = focusPoint;
 			} else if(lowMode == PASS_MODE){
+				rayToCamera = Board.transform.position - transform.position;
+				Vector2 flattenedRay = new Vector2(rayToCamera.x, rayToCamera.z);
 
+				radialAngle = Vector2.Angle(referenceRay, flattenedRay);
+				Vector3 cross = Vector3.Cross (referenceRay, flattenedRay);
+
+				if (cross.z > 0)
+					radialAngle = 360 - radialAngle;
+
+				if(radialAngle > 90.0 && radialAngle < 270.0){
+					Debug.Log("In Player2 position");
+				} else {
+					Debug.Log("In Player1 position");
+				}
 			}
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
