@@ -84,8 +84,14 @@ public class ARCameraController : MonoBehaviour{
 
 	//initial scale of board
 	Vector3 initScale;
+<<<<<<< HEAD
 	//textmesh for screen text
 	TextMesh t; 
+=======
+	//initial position of board
+	Vector2 initialBoardPosition;
+
+>>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -116,9 +122,13 @@ public class ARCameraController : MonoBehaviour{
 
 		//get initial local scale
 		initScale = Board.transform.localScale;
+<<<<<<< HEAD
 
 		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
 		t.text = "Find Image Target";
+=======
+		initialBoardPosition = Board.transform.position;
+>>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
 
 	}
 
@@ -161,8 +171,10 @@ public class ARCameraController : MonoBehaviour{
 					if(hit.transform.tag == "piece"){
 						// Highlight Piece that's focused on
 						Debug.Log("hit piece");
-						hit.transform.GetComponent<GamePieceScript>().focus();
-						focusedObject = hit.transform.gameObject;
+						if(hit.transform.GetComponent<GamePieceScript>().player == Board.GetComponent<GameScript>().turn){
+							hit.transform.GetComponent<GamePieceScript>().focus();
+							focusedObject = hit.transform.gameObject;
+						}
 					} else {
 						Debug.Log("Searching");
 						if(focusedObject != null){
@@ -177,7 +189,12 @@ public class ARCameraController : MonoBehaviour{
 				}
 
 			} else if(lowMode == MOVE_MODE){
+				Debug.Log("MOVE_MODE_UPDATE");
 				selectedObject.transform.position = focusPoint;
+				if(selectedObject.transform.position.y < 11.0f)
+					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,11.0f,selectedObject.transform.position.z);
+				if(selectedObject.transform.position.y > 15.0f)
+					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,15.0f,selectedObject.transform.position.z);
 			} else if(lowMode == PASS_MODE){
 				rayToCamera = Board.transform.position - transform.position;
 				Vector2 flattenedRay = new Vector2(rayToCamera.x, rayToCamera.z);
@@ -190,6 +207,7 @@ public class ARCameraController : MonoBehaviour{
 
 				if(radialAngle > 90.0 && radialAngle < 270.0){
 					Debug.Log("In Player2 position");
+
 				} else {
 					Debug.Log("In Player1 position");
 				}
@@ -258,10 +276,17 @@ public class ARCameraController : MonoBehaviour{
 				/// Place
 				if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "Select Piece")) {
 					if(focusedObject!=null){
-						selectedObject = focusedObject;
-						lowMode = MOVE_MODE;
-						selectedObject.GetComponent<GamePieceScript>().select();
-						game.showMoves(selectedObject);
+						//check if piece is valid move
+						GameScript.CheckersMove[] valMoves = Board.GetComponent<GameScript>().getLegalMoves(focusedObject);
+						if(valMoves!=null){
+							selectedObject = focusedObject;
+							lowMode = MOVE_MODE;
+							selectedObject.GetComponent<GamePieceScript>().select();
+							game.showMoves(selectedObject);
+							focusedObject = null;
+						}else{
+							//dont allow move
+						}
 					}
 				}
 				/////////////////
@@ -285,8 +310,12 @@ public class ARCameraController : MonoBehaviour{
 
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
+<<<<<<< HEAD
 				selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-100),(height-100), 100, 100), "Place Piece")) {
+=======
+				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "Place Piece")) {
+>>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
 					lowMode = PASS_MODE;
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
 					selectedObject = null;
@@ -325,6 +354,7 @@ public class ARCameraController : MonoBehaviour{
 			else{
 				lowMode = BASE_EX_MODE;
 			}
+<<<<<<< HEAD
 			if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "BACK")) {
 				highMode = PLAY_MODE;
 				lowMode = SEL_MODE;
@@ -335,6 +365,21 @@ public class ARCameraController : MonoBehaviour{
 			//   NewGame   //
 			/////////////////
 			if (GUI.RepeatButton (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
+=======
+
+			///////////////
+			//   Play    //
+			///////////////
+			if(GUI.Button (new Rect((width-200),(height-100), 100, 100), "Play")){
+				highMode = PLAY_MODE;
+				lowMode = SEL_MODE;
+			}
+
+			/////////////////
+			//   NewGame   //
+			/////////////////
+			if (GUI.Button (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
+>>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
 				//translateMode = true;
 			}
 			if(lowMode == SCALE_MODE){

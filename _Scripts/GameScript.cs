@@ -6,6 +6,7 @@ public class GameScript : MonoBehaviour
 	public Transform boardPiecePrefab;
 	public Transform gamePiecePrefab;
 	private GameObject[,] boardPieces;
+
 	public int turn;
 	private Player player1;
 	private Player player2;
@@ -22,6 +23,7 @@ public class GameScript : MonoBehaviour
 		showingMoves = false;
 		highlightedCubes = new ArrayList ();
 		boardPieces = new GameObject[8, 8];
+
 		player1 = new Player(1);
 		player2 = new Player(2);
 		board = GameObject.FindGameObjectWithTag ("Board");
@@ -32,7 +34,7 @@ public class GameScript : MonoBehaviour
 	}
 	public void showMoves(GameObject piece){
 		Debug.Log ("Piece Spot:"+piece.GetComponent<GamePieceScript>().location.ToString());
-		CheckersMove[] moves = getLegalMoves(turn);
+		CheckersMove[] moves = getLegalMoves(piece);
 		foreach (CheckersMove move in moves) {
 			if(move.fromCol == piece.GetComponent<GamePieceScript>().location.y && move.fromRow == piece.GetComponent<GamePieceScript>().location.x){
 				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().highlight();
@@ -40,6 +42,20 @@ public class GameScript : MonoBehaviour
 				highlightedCubes.Add(boardPieces[move.toRow,move.toCol]);
 				highlightedCubes.Add(boardPieces[move.fromRow,move.fromCol]);
 			}
+		}
+	}
+	public Player currPlayer(){
+		if (turn == 1) {
+			return player1;
+		}else if(turn==2){
+			return player2;
+		}
+	}
+	public Player otherPlayer(){
+		if (turn == 1) {
+			return player2;
+		}else if(turn==2){
+			return player1;
 		}
 	}
 	public void stopShowingMoves(){
@@ -105,16 +121,16 @@ public class GameScript : MonoBehaviour
 		//player number
 		public int player;
 		//pieces that belong to the player
-		public GameObject[] pieces;
+		public ArrayList pieces;
 		public int numPieces;
 		public Player(int p){
 			player = p;
 			numPieces = 0;
-			pieces = new GameObject[12];
+			pieces = new ArrayList();
 		}
 		public void addPiece(GameObject p){
-			pieces[numPieces] = p;
-			pieces[numPieces].GetComponent<GamePieceScript>().setColor(player);
+			pieces.Add(p);
+			((GameObject)pieces[numPieces]).GetComponent<GamePieceScript>().setColor(player);
 			numPieces++;
 		}
 		//public
@@ -143,84 +159,39 @@ public class GameScript : MonoBehaviour
 		}
 	}
 
-	public CheckersMove[] getLegalMoves(int player) {
+	public CheckersMove[] getLegalMoves(GameObject focused){
 		ArrayList moves = new ArrayList();  // Moves will be stored in this list.
-		if (this.turn == player1.player) {
-			// Player1
-
-			foreach(GameObject piece in player1.pieces){
-				int row = (int) piece.GetComponent<GamePieceScript>().location.x;
-				int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
-				if (canJump(player, row, col, row+1, col+1, row+2, col+2))
-					moves.Add(new CheckersMove(row, col, row+2, col+2));
-				if (canJump(player, row, col, row-1, col+1, row-2, col+2))
-					moves.Add(new CheckersMove(row, col, row-2, col+2));
-				if (canJump(player, row, col, row+1, col-1, row+2, col-2))
-					moves.Add(new CheckersMove(row, col, row+2, col-2));
-				if (canJump(player, row, col, row-1, col-1, row-2, col-2))
-					moves.Add(new CheckersMove(row, col, row-2, col-2));
-			}
-			// FORCE MOVE 
-			// If there are no valid jumps in the possible moveset,
-			// Test single space moves.
-			if (moves.Count == 0) {
-				foreach(GameObject piece in player1.pieces){
-					int row = (int) piece.GetComponent<GamePieceScript> ().location.x;
-					int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
-					if (canMove(player,row,col,row+1,col+1))
-						moves.Add(new CheckersMove(row,col,row+1,col+1));
-					if (canMove(player,row,col,row-1,col+1))
-						moves.Add(new CheckersMove(row,col,row-1,col+1));
-					if (canMove(player,row,col,row+1,col-1))
-						moves.Add(new CheckersMove(row,col,row+1,col-1));
-					if (canMove(player,row,col,row-1,col-1))
-						moves.Add(new CheckersMove(row,col,row-1,col-1));
-				}
-			}
-			if (moves.Count == 0)
-				return null;
-			else {
-				CheckersMove[] moveArray = new CheckersMove[moves.Count];
-				for (int i = 0; i < moves.Count; i++)
-					moveArray[i] = (CheckersMove)moves[i];
-				return moveArray;
-			}
-		}else{
-			// Player2
-			foreach(GameObject piece in player2.pieces){
-				int row = (int) piece.GetComponent<GamePieceScript> ().location.x;
-				int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
-				if (canJump(player, row, col, row+1, col+1, row+2, col+2))
-					moves.Add(new CheckersMove(row, col, row+2, col+2));
-				if (canJump(player, row, col, row-1, col+1, row-2, col+2))
-					moves.Add(new CheckersMove(row, col, row-2, col+2));
-				if (canJump(player, row, col, row+1, col-1, row+2, col-2))
-					moves.Add(new CheckersMove(row, col, row+2, col-2));
-				if (canJump(player, row, col, row-1, col-1, row-2, col-2))
-					moves.Add(new CheckersMove(row, col, row-2, col-2));
-			}
-			if (moves.Count == 0) {
-				foreach(GameObject piece in player2.pieces){
-					int row = (int) piece.GetComponent<GamePieceScript> ().location.x;
-					int col = (int) piece.GetComponent<GamePieceScript> ().location.y;
-					if (canMove(player,row,col,row+1,col+1))
-						moves.Add(new CheckersMove(row,col,row+1,col+1));
-					if (canMove(player,row,col,row-1,col+1))
-						moves.Add(new CheckersMove(row,col,row-1,col+1));
-					if (canMove(player,row,col,row+1,col-1))
-						moves.Add(new CheckersMove(row,col,row+1,col-1));
-					if (canMove(player,row,col,row-1,col-1))
-						moves.Add(new CheckersMove(row,col,row-1,col-1));
-				}
-			}
-			if (moves.Count == 0)
-				return null;
-			else {
-				CheckersMove[] moveArray = new CheckersMove[moves.Count];
-				for (int i = 0; i < moves.Count; i++)
-					moveArray[i] =(CheckersMove)moves[i];
-				return moveArray;
-			}
+		int row = (int) focused.GetComponent<GamePieceScript>().location.x;
+		int col = (int) focused.GetComponent<GamePieceScript> ().location.y;
+	
+		if (canJump(turn, row, col, row+1, col+1, row+2, col+2))
+			moves.Add(new CheckersMove(row, col, row+2, col+2));
+		if (canJump(turn, row, col, row-1, col+1, row-2, col+2))
+			moves.Add(new CheckersMove(row, col, row-2, col+2));
+		if (canJump(turn, row, col, row+1, col-1, row+2, col-2))
+			moves.Add(new CheckersMove(row, col, row+2, col-2));
+		if (canJump(turn, row, col, row-1, col-1, row-2, col-2))
+			moves.Add(new CheckersMove(row, col, row-2, col-2));
+		// FORCE MOVE 
+		// If there are no valid jumps in the possible moveset,
+		// Test single space moves.
+		if (moves.Count == 0) {
+				if (canMove(turn,row,col,row+1,col+1))
+					moves.Add(new CheckersMove(row,col,row+1,col+1));
+				if (canMove(turn,row,col,row-1,col+1))
+					moves.Add(new CheckersMove(row,col,row-1,col+1));
+				if (canMove(turn,row,col,row+1,col-1))
+					moves.Add(new CheckersMove(row,col,row+1,col-1));
+				if (canMove(turn,row,col,row-1,col-1))
+					moves.Add(new CheckersMove(row,col,row-1,col-1));
+		}
+		if (moves.Count == 0)
+			return null;
+		else {
+			CheckersMove[] moveArray = new CheckersMove[moves.Count];
+			for (int i = 0; i < moves.Count; i++)
+				moveArray[i] = (CheckersMove)moves[i];
+			return moveArray;
 		}
 	}
 
@@ -263,32 +234,56 @@ public class GameScript : MonoBehaviour
        * (r2,c2) is the square between (r1,c1) and (r3,c3).
        */
 	private bool canJump(int player, int r1, int c1, int r2, int c2, int r3, int c3) {
-
-		// (r3,c3) is off the board.
-		if (r3 < 0 || r3 >= 8 || c3 < 0 || c3 >= 8)
-			return false; 
-		
-		if (boardPieces[r3,c3].GetComponent<CubeSpaceScript>().isOccupied)
-			return false;  // (r3,c3) already contains a piece.
-		
-		if (player == player1.player) {
-			if (r3 < r1 && boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false)
-				return false;  // Regular black piece can only move up.
-			else
-				Debug.Log("not a regular piece");
-			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player != player2.player)
-				return false;  // There is no black piece to jump.
-			return true;  // The jump is legal.
+		Player playing = currPlayer ();
+		Player other = otherPlayer ();
+		GameObject myPiece= null;
+		Debug.Log("This player has "+playing.numPieces.ToString());
+		canJump = false;
+		foreach (Object p in playing.pieces) {
+			Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript>().location;
+			if(loc.x==r1&&loc.y==r2){
+				myPiece = (GameObject)p;
+			}else if(loc.x==r3&&loc.y==c3){
+				return false;
+			}
 		}
-		else {
-			if (boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false && r3 > r1)
-				return false;  // Regular black piece can only move downn.
-			else
-				Debug.Log("not a regular piece");
-			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player!= player1.player)
-				return false;  // There is no red piece to jump.
-			return true;  // The jump is legal.
+		if (!myPiece.GetComponent<GamePieceScript> ().isKing) {
+			if(turn==1&&r3<r1){
+				return false;
+			}else if(turn==2&&r1<r3){
+				return false;
+			}
 		}
+		foreach (Object p in other.pieces) {
+			Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript>().location;
+			if(loc.x==r3&&loc.y==c3){
+				return false;
+			}else if(loc.x==r2&&loc.y==c2){
+				canJump = true;
+			}
+		}
+		return false;
+//		if (boardPieces[r3,c3].GetComponent<CubeSpaceScript>().isOccupied)
+//			return false;  // (r3,c3) already contains a piece.
+//		
+//		if (player == player1.player) {
+//			if (r3 < r1 && boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece() != null && boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false)
+//				return false;  // Regular black piece can only move up.
+//			else
+//				Debug.Log("not a regular piece");
+//			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player != player2.player)
+//				return false;  // There is no black piece to jump.
+//			return true;  // The jump is legal.
+//		}
+//		else {
+//			if (boardPieces[r1,c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().isKing==false && r3 > r1)
+//				return false;  // Regular black piece can only move downn.
+//			else
+//				Debug.Log("not a regular piece");
+//			if (boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece()!=null && boardPieces[r2,c2].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player!= player1.player)
+//				return false;  // There is no red piece to jump.
+//			return true;  // The jump is legal.
+//		}
 		
 	}
 	
@@ -300,21 +295,33 @@ public class GameScript : MonoBehaviour
        * that (r2,c2) is a neighboring square.
        */
 	private bool canMove(int player, int r1, int c1, int r2, int c2) {
-		if (r2 < 0 || r2 >= 8 || c2 < 0 || c2 >= 8)
-				return false;  // (r2,c2) is off the board.
-
-		if (boardPieces[r2, c2].GetComponent<CubeSpaceScript>().isOccupied)
-				return false;  // (r2,c2) already contains a piece.
-
-		if (player == player1.player) {
-			if (boardPieces[r1, c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player1.player && r2 > r1)
-						return false;  // Regular red piece can only move down.
-				return true;  // The move is legal.
-		} else {
-			if (boardPieces[r1, c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player2.player && r2 < r1)
-						return false;  // Regular black piece can only move up.
-				return true;  // The move is legal.
+		Player playing = currPlayer ();
+		Player other = otherPlayer ();
+		GameObject myPiece;
+		Debug.Log("This player has "+playing.numPieces.ToString());
+		canJump = false;
+		foreach (Object p in playing.pieces) {
+			Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript>().location;
+			if(loc.x==r1&&loc.y==r2){
+				myPiece = (GameObject)p;
+			}else if(loc.x==r2&&loc.y==c2){
+				return false;
+			}
 		}
+		if (!myPiece.GetComponent<GamePieceScript> ().isKing) {
+			if(turn==1&&r2<r1){
+				return false;
+			}else if(turn==2&&r1<r2){
+				return false;
+			}
+		}
+		foreach (Object p in other.pieces) {
+			Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript>().location;
+			if(loc.x==r2&&loc.y==c2){
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

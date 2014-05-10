@@ -13,6 +13,7 @@ public class GamePieceScript : MonoBehaviour {
 	void Start () {
 		transform.tag = "piece";
 		isKing = false;
+		isDead = false;
 	}
 	
 	// Update is called once per frame
