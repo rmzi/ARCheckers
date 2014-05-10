@@ -295,7 +295,7 @@ public class ARCameraController : MonoBehaviour{
 						game.turn=2;
 					else if(game.turn ==2)
 						game.turn =1;
-				}
+				 }
 
 				
 				/////////////////
