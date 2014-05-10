@@ -6,6 +6,7 @@ public class GameScript : MonoBehaviour
 	public Transform boardPiecePrefab;
 	public Transform gamePiecePrefab;
 	private GameObject[,] boardPieces;
+
 	public int turn;
 	private Player player1;
 	private Player player2;
@@ -22,6 +23,7 @@ public class GameScript : MonoBehaviour
 		showingMoves = false;
 		highlightedCubes = new ArrayList ();
 		boardPieces = new GameObject[8, 8];
+
 		player1 = new Player(1);
 		player2 = new Player(2);
 		board = GameObject.FindGameObjectWithTag ("Board");
@@ -105,16 +107,16 @@ public class GameScript : MonoBehaviour
 		//player number
 		public int player;
 		//pieces that belong to the player
-		public GameObject[] pieces;
+		public ArrayList pieces;
 		public int numPieces;
 		public Player(int p){
 			player = p;
 			numPieces = 0;
-			pieces = new GameObject[12];
+			pieces = new ArrayList();
 		}
 		public void addPiece(GameObject p){
 			pieces[numPieces] = p;
-			pieces[numPieces].GetComponent<GamePieceScript>().setColor(player);
+			((GameObject)pieces[numPieces]).GetComponent<GamePieceScript>().setColor(player);
 			numPieces++;
 		}
 		//public
@@ -302,7 +304,6 @@ public class GameScript : MonoBehaviour
 	private bool canMove(int player, int r1, int c1, int r2, int c2) {
 		if (r2 < 0 || r2 >= 8 || c2 < 0 || c2 >= 8)
 				return false;  // (r2,c2) is off the board.
-
 		if (boardPieces[r2, c2].GetComponent<CubeSpaceScript>().isOccupied)
 				return false;  // (r2,c2) already contains a piece.
 
@@ -312,6 +313,7 @@ public class GameScript : MonoBehaviour
 				return true;  // The move is legal.
 		} else {
 			if (boardPieces[r1, c1].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player2.player && r2 < r1)
+
 						return false;  // Regular black piece can only move up.
 				return true;  // The move is legal.
 		}

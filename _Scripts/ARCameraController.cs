@@ -87,12 +87,12 @@ public class ARCameraController : MonoBehaviour{
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 
 		// DESKTOP DEBUG
-		height = Screen.height;
-		width = Screen.width;
+		//height = Screen.height;
+		//width = Screen.width;
 
 		// PHONE DEBUG
-		//height = Screen.width;
-		//width = Screen.height;
+		height = Screen.width;
+		width = Screen.height;
 
 		focusedObject = null;
 		selectedObject = null;
@@ -169,7 +169,12 @@ public class ARCameraController : MonoBehaviour{
 				}
 
 			} else if(lowMode == MOVE_MODE){
+				Debug.Log("MOVE_MODE_UPDATE");
 				selectedObject.transform.position = focusPoint;
+				if(selectedObject.transform.position.y < 11.0f)
+					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,11.0f,selectedObject.transform.position.z);
+				if(selectedObject.transform.position.y > 15.0f)
+					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,15.0f,selectedObject.transform.position.z);
 			} else if(lowMode == PASS_MODE){
 				rayToCamera = Board.transform.position - transform.position;
 				Vector2 flattenedRay = new Vector2(rayToCamera.x, rayToCamera.z);
@@ -250,6 +255,7 @@ public class ARCameraController : MonoBehaviour{
 						lowMode = MOVE_MODE;
 						selectedObject.GetComponent<GamePieceScript>().select();
 						game.showMoves(selectedObject);
+						focusedObject = null;
 					}
 				}
 				/////////////////
