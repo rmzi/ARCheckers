@@ -80,19 +80,20 @@ public class ARCameraController : MonoBehaviour{
 
 	//initial scale of board
 	Vector3 initScale;
-
+	//initial position of board
+	Vector2 initialBoardPosition;
 
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 
 		// DESKTOP DEBUG
-		//height = Screen.height;
-		//width = Screen.width;
+		height = Screen.height;
+		width = Screen.width;
 
 		// PHONE DEBUG
-		height = Screen.width;
-		width = Screen.height;
+		//height = Screen.width;
+		//width = Screen.height;
 
 		focusedObject = null;
 		selectedObject = null;
@@ -112,6 +113,8 @@ public class ARCameraController : MonoBehaviour{
 
 		//get initial local scale
 		initScale = Board.transform.localScale;
+		initialBoardPosition = Board.transform.position;
+
 	}
 
 
@@ -153,8 +156,10 @@ public class ARCameraController : MonoBehaviour{
 					if(hit.transform.tag == "piece"){
 						// Highlight Piece that's focused on
 						Debug.Log("hit piece");
-						hit.transform.GetComponent<GamePieceScript>().focus();
-						focusedObject = hit.transform.gameObject;
+						if(hit.transform.GetComponent<GamePieceScript>().player == Board.GetComponent<GameScript>().turn){
+							hit.transform.GetComponent<GamePieceScript>().focus();
+							focusedObject = hit.transform.gameObject;
+						}
 					} else {
 						Debug.Log("Searching");
 						if(focusedObject != null){
@@ -187,6 +192,7 @@ public class ARCameraController : MonoBehaviour{
 
 				if(radialAngle > 90.0 && radialAngle < 270.0){
 					Debug.Log("In Player2 position");
+
 				} else {
 					Debug.Log("In Player1 position");
 				}
@@ -251,11 +257,17 @@ public class ARCameraController : MonoBehaviour{
 				/// Place
 				if (GUI.Button (new Rect ((width-250), (height-100), 150, 100), "Select Piece")) {
 					if(focusedObject!=null){
-						selectedObject = focusedObject;
-						lowMode = MOVE_MODE;
-						selectedObject.GetComponent<GamePieceScript>().select();
-						game.showMoves(selectedObject);
-						focusedObject = null;
+						//check if piece is valid move
+						GameScript.CheckersMove[] valMoves = Board.GetComponent<GameScript>().getLegalMoves(focusedObject);
+						if(valMoves!=null){
+							selectedObject = focusedObject;
+							lowMode = MOVE_MODE;
+							selectedObject.GetComponent<GamePieceScript>().select();
+							game.showMoves(selectedObject);
+							focusedObject = null;
+						}else{
+							//dont allow move
+						}
 					}
 				}
 				/////////////////
@@ -279,7 +291,6 @@ public class ARCameraController : MonoBehaviour{
 
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
-				selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "Place Piece")) {
 					lowMode = PASS_MODE;
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
@@ -317,11 +328,19 @@ public class ARCameraController : MonoBehaviour{
 			}else{
 				lowMode = BASE_EX_MODE;
 			}
-			
+
+			///////////////
+			//   Play    //
+			///////////////
+			if(GUI.Button (new Rect((width-200),(height-100), 100, 100), "Play")){
+				highMode = PLAY_MODE;
+				lowMode = SEL_MODE;
+			}
+
 			/////////////////
 			//   NewGame   //
 			/////////////////
-			if (GUI.RepeatButton (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
+			if (GUI.Button (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
 				//translateMode = true;
 			}
 			if(lowMode == SCALE_MODE){
