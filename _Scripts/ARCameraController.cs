@@ -41,6 +41,7 @@ public class ARCameraController : MonoBehaviour{
 	private const int MOVE_MODE = 4;
 	private const int SCALE_MODE = 5;
 	private const int BASE_EX_MODE = 6;
+	private const int PASS_MODE = 7;
 
 
 	//Variables containing current modes for GAME
@@ -81,6 +82,12 @@ public class ARCameraController : MonoBehaviour{
 	//bools handling menu
 	private bool targetFound;
 
+	//initial position of camera
+	Vector3 pos;    
+
+	//initial scale of board
+	Vector3 initScale;
+
 
 	// Use this for initialization
 	void Start () {
@@ -110,6 +117,12 @@ public class ARCameraController : MonoBehaviour{
 		//jose test
 		//turn.fontSize = 25;
 		game = Board.GetComponent<GameScript> ();
+
+		//initial camera position
+		pos = transform.position;
+
+		//get initial local scale
+		initScale = Board.transform.localScale;
 	}
 
 
@@ -125,6 +138,11 @@ public class ARCameraController : MonoBehaviour{
 		// Point Ray through center of camera viewport 
 		focusRay = camera.ViewportPointToRay(new Vector3(0.5F, 0.5F, 0));
 		focusPoint = transform.position + focusRay.direction * focusDistance;
+
+		//how much the position of camera changed
+		Vector3 howmuch = pos - transform.position;
+		pos = transform.position;
+
 
 		// Debug
 		// Draw ray during pause mode with sphere at the end
@@ -163,9 +181,9 @@ public class ARCameraController : MonoBehaviour{
 
 			} else if(lowMode == MOVE_MODE){
 				selectedObject.transform.position = focusPoint;
+			} else if(lowMode == PASS_MODE){
+
 			}
-
-
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
 			if (trans){
@@ -176,7 +194,11 @@ public class ARCameraController : MonoBehaviour{
 			if(lowMode==BASE_EX_MODE){
 			
 			}else if(lowMode == SCALE_MODE){
-
+				Vector3 myVector =  new Vector3(howmuch.y*0.001f,howmuch.y*0.001f,howmuch.y*0.001f);
+				if(myVector.x +Board.transform.localScale.x <initScale.x)
+					Board.transform.localScale = initScale;
+				else
+					Board.transform.localScale += myVector;
 			}
 		}
 
@@ -233,7 +255,7 @@ public class ARCameraController : MonoBehaviour{
 						selectedObject = focusedObject;
 						lowMode = MOVE_MODE;
 						selectedObject.GetComponent<GamePieceScript>().select();
-						game.showMoves(selectedObject.GetComponent<GamePieceScript>());
+						game.showMoves(selectedObject.transform);
 					}
 				}
 				/////////////////
@@ -263,11 +285,16 @@ public class ARCameraController : MonoBehaviour{
 				// MOVEMENT MODE
 				selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "Place Piece")) {
-					lowMode = SEL_MODE;
+					lowMode = PASS_MODE;
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
 					selectedObject = null;
 					game.stopShowingMoves();
+					if(game.turn ==1)
+						game.turn=2;
+					else if(game.turn ==2)
+						game.turn =1;
 				}
+
 				
 				/////////////////
 				//   NewGame   //
@@ -275,9 +302,13 @@ public class ARCameraController : MonoBehaviour{
 				if (GUI.RepeatButton (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
 					//translateMode = true;
 				}
+			}else if(lowMode == PASS_MODE){
+				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "IM HERE")) {
+					lowMode = SEL_MODE;
+
+
+				}
 			}
-			
-			
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
 			// Translation via Joystick
@@ -299,20 +330,20 @@ public class ARCameraController : MonoBehaviour{
 			}
 			if(lowMode == SCALE_MODE){
 				// SCALE MODE
-				GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 1", turn);	
+				//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 1", turn);	
 			}
 		}
 		//player message
-		if (p1) {
+		if (game.turn==1) {
 
 			turn.normal.textColor = Color.magenta;
 			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN BLACK", turn);
-			p2 = false;
+			//p2 = false;
 		}
-		if (p2) {
+		if (game.turn==2) {
 			turn.normal.textColor = Color.magenta;
 			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN RED", turn);
-			p1 = false;
+			//p1 = false;
 		}
 		int number = 12;
 		redP2.normal.textColor = Color.red;
