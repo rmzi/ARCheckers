@@ -84,14 +84,11 @@ public class ARCameraController : MonoBehaviour{
 
 	//initial scale of board
 	Vector3 initScale;
-<<<<<<< HEAD
 	//textmesh for screen text
 	TextMesh t; 
-=======
 	//initial position of board
 	Vector2 initialBoardPosition;
-
->>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
+	
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -122,13 +119,10 @@ public class ARCameraController : MonoBehaviour{
 
 		//get initial local scale
 		initScale = Board.transform.localScale;
-<<<<<<< HEAD
 
 		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
 		t.text = "Find Image Target";
-=======
 		initialBoardPosition = Board.transform.position;
->>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
 
 	}
 
@@ -310,16 +304,14 @@ public class ARCameraController : MonoBehaviour{
 
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
-<<<<<<< HEAD
+
 				selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-100),(height-100), 100, 100), "Place Piece")) {
-=======
-				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "Place Piece")) {
->>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
-					lowMode = PASS_MODE;
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
 					selectedObject = null;
 					game.stopShowingMoves();
+					//check if there is another jump to force player to jump
+					lowMode = PASS_MODE;
 					if(game.turn ==1)
 						game.turn=2;
 					else if(game.turn ==2)
@@ -354,8 +346,7 @@ public class ARCameraController : MonoBehaviour{
 			else{
 				lowMode = BASE_EX_MODE;
 			}
-<<<<<<< HEAD
-			if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "BACK")) {
+			if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "PLAY")) {
 				highMode = PLAY_MODE;
 				lowMode = SEL_MODE;
 				Board.transform.localScale = initScale;
@@ -365,21 +356,6 @@ public class ARCameraController : MonoBehaviour{
 			//   NewGame   //
 			/////////////////
 			if (GUI.RepeatButton (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
-=======
-
-			///////////////
-			//   Play    //
-			///////////////
-			if(GUI.Button (new Rect((width-200),(height-100), 100, 100), "Play")){
-				highMode = PLAY_MODE;
-				lowMode = SEL_MODE;
-			}
-
-			/////////////////
-			//   NewGame   //
-			/////////////////
-			if (GUI.Button (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
->>>>>>> 9c1dcbc7703b692391c513e1d1e4a4f1add3716f
 				//translateMode = true;
 			}
 			if(lowMode == SCALE_MODE){
