@@ -9,6 +9,8 @@ public class ARCameraController : MonoBehaviour{
 	//joystick
 	public Transform joystick;
 
+
+
 	// Modes
 	// Modes will determine which code to run to increase efficiency of calculations
 	// Low level modes are nested in high level modes
@@ -44,9 +46,11 @@ public class ARCameraController : MonoBehaviour{
 	//GameObjects
 	public GameObject ImageTarget;
 	public GameObject Board;
+	public GameObject screenText;
+
 
 	// Player Mode
-	public bool p1;
+	public bool gameTurn;
 	public bool p2;
 	public GUIStyle turn;
 	public GUIStyle redP2;
@@ -80,8 +84,8 @@ public class ARCameraController : MonoBehaviour{
 
 	//initial scale of board
 	Vector3 initScale;
-
-
+	//textmesh for screen text
+	TextMesh t; 
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -96,7 +100,7 @@ public class ARCameraController : MonoBehaviour{
 
 		focusedObject = null;
 		selectedObject = null;
-		p1 = false;
+		gameTurn = false;
 		p2 = false;
 		targetFound = false;
 		highMode = PREGAME_MODE;
@@ -112,6 +116,10 @@ public class ARCameraController : MonoBehaviour{
 
 		//get initial local scale
 		initScale = Board.transform.localScale;
+
+		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
+		t.text = "Find Image Target";
+
 	}
 
 
@@ -204,31 +212,35 @@ public class ARCameraController : MonoBehaviour{
 	}
 	
 	void OnGUI () {
-		GUI.Label((new Rect (((width/2)-50),30, 150, 50)),"High Mode" + highMode, turn);
-		GUI.Label((new Rect (((width/2)-50),50, 150, 50)),"Low Mode" + lowMode, turn);
+
 		if (highMode == PREGAME_MODE){
 			// PREGAME MODE
 			if(lowMode == INIT_MODE){
 			// INITIALIZE MODE
 			// Prompt user to find image target
-				GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"Find the Image Target", turn);
+				//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"Find the Image Target", turn);
 			}else if(lowMode == START_MODE){
 			// START MODE
 			// Prompt user to start game
-				if (GUI.Button (new Rect ((width/2), (height/2), 150, 100), "START")) {
+				t.text = "LETS PLAY!";
+				if (GUI.Button (new Rect ((width/2-75), (height/2-50), 150, 100), "START")) {
 					lowMode = INSTR_MODE;
+
+
+					//text.GetComponent(TextMesh)="blah";
 				}
 			}else if(lowMode == INSTR_MODE){
 			//
 				turn.normal.textColor = Color.magenta;
 				wrap.normal.textColor = Color.magenta;
-				GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"INSTRUCTIONS", turn);
+				//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"INSTRUCTIONS", turn);
+				t.text = "Instructions\n\nBlack moves first. Players alternate turns\nOnly move diagonally on dark squres.\nA player wins when opponent can't make any \nmoves or is left without pieces.";
 				wrap.wordWrap = true;
-				GUI.Label((new Rect (((width/5)-50),100, (width-200), (height-200))),"Black moves first. Players then alternate moves.Moves are allowed only on the dark squares, so pieces always move diagonally. Single pieces are always limited to forward moves (toward the opponent). A piece making a non-capturing move (not involving a jump) may move only one square. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.When a piece is captured, it is removed from the board.If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent). A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.",wrap);
-				if (GUI.Button (new Rect ((width/2), (height-100), 150, 100), "Continue")) {
+				//GUI.Label((new Rect (((width/5)-50),100, (width-200), (height-200))),"Black moves first. Players then alternate moves.Moves are allowed only on the dark squares, so pieces always move diagonally. Single pieces are always limited to forward moves (toward the opponent). A piece making a non-capturing move (not involving a jump) may move only one square. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.When a piece is captured, it is removed from the board.If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent). A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.",wrap);
+				if (GUI.Button (new Rect ((width-150), (height-100), 150, 100), "Continue")) {
 					highMode = PLAY_MODE;
 					lowMode = SEL_MODE;
-					p1 = true;
+					gameTurn = true;
 					game.makeBoard ();
 				}
 			}
@@ -244,7 +256,7 @@ public class ARCameraController : MonoBehaviour{
 				/// These two buttons should be on top of each other;
 				/// Pick Up
 				/// Place
-				if (GUI.Button (new Rect ((width-250), (height-100), 150, 100), "Select Piece")) {
+				if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "Select Piece")) {
 					if(focusedObject!=null){
 						selectedObject = focusedObject;
 						lowMode = MOVE_MODE;
@@ -255,7 +267,7 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				// Translation //
 				/////////////////
-				if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "Explore")) {
+				if (GUI.Button (new Rect ((width-200), (height-100), 100, 100), "Explore")) {
 					highMode = EXPLORE_MODE;
 
 				}
@@ -263,18 +275,18 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				//   NewGame   //
 				/////////////////
-				if (GUI.Button (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
+				if (GUI.Button (new Rect ((width-400), (height-100), 100, 100), "Resign")) {
 					//translateMode = true;
 				}
 				//
-				if (GUI.Button (new Rect ((width-250), (height-200), 150, 100), "Show Moves")) {
+				if (GUI.Button (new Rect ((width-300), (height-100), 100, 100), "Show Moves")) {
 
 				}
 
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
 				selectedObject.transform.position = focusPoint;
-				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "Place Piece")) {
+				if (GUI.Button (new Rect ((width-100),(height-100), 100, 100), "Place Piece")) {
 					lowMode = PASS_MODE;
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
 					selectedObject = null;
@@ -289,11 +301,11 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				//   NewGame   //
 				/////////////////
-				if (GUI.RepeatButton (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
+				if (GUI.RepeatButton (new Rect ((width-200), (height-100), 100, 100), "Resign")) {
 					//translateMode = true;
 				}
 			}else if(lowMode == PASS_MODE){
-				if (GUI.Button (new Rect ((width-250),(height-100), 150, 100), "IM HERE")) {
+				if (GUI.Button (new Rect ((width/2-75),(height/2-50), 150, 100), "IM HERE")) {
 					lowMode = SEL_MODE;
 
 
@@ -303,38 +315,48 @@ public class ARCameraController : MonoBehaviour{
 			// EXPLORE MODE
 			// Translation via Joystick
 			joystick = (Transform)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+
 			/////////////////
 			// Translation //
 			/////////////////
-			if (GUI.RepeatButton (new Rect ((width-100), (height-100), 100, 100), "SCALE")) {
+			if (GUI.RepeatButton (new Rect ((width-200), (height-100), 100, 100), "SCALE")) {
 				lowMode = SCALE_MODE;
-			}else{
+			}
+			else{
 				lowMode = BASE_EX_MODE;
+			}
+			if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "BACK")) {
+				highMode = PLAY_MODE;
+				lowMode = SEL_MODE;
+				Board.transform.localScale = initScale;
 			}
 			
 			/////////////////
 			//   NewGame   //
 			/////////////////
-			if (GUI.RepeatButton (new Rect ((width-350), (height-100), 100, 100), "Resign")) {
+			if (GUI.RepeatButton (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
 				//translateMode = true;
 			}
 			if(lowMode == SCALE_MODE){
 				// SCALE MODE
-				//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN PLAYER 1", turn);	
 			}
 		}
-		//player message
-		if (game.turn==1) {
+		if (gameTurn) {
+						//player message
+						if (game.turn == 1) {
 
-			turn.normal.textColor = Color.magenta;
-			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN BLACK", turn);
-			//p2 = false;
-		}
-		if (game.turn==2) {
-			turn.normal.textColor = Color.magenta;
-			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN RED", turn);
-			//p1 = false;
-		}
+								turn.normal.textColor = Color.magenta;
+								//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN BLACK", turn);
+								t.text = "Your Turn Black";
+								//p2 = false;
+						}
+						if (game.turn == 2) {
+								turn.normal.textColor = Color.magenta;
+								//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN RED", turn);
+								t.text = "Your Turn Red";
+								//p1 = false;
+						}
+				}
 		int number = 8;
 		redP2.normal.textColor = Color.red;
 		redP1.normal.textColor = Color.white;
