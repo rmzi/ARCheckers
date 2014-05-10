@@ -18,8 +18,8 @@ public class ARCameraController : MonoBehaviour{
 	public bool trans;
 
 	//Trays
-	//private Transform blackTray;
-	//private Transform redTray;
+	private Transform blackTray;
+	private Transform redTray;
 
 	// Modes
 	// Modes will determine which code to run to increase efficiency of calculations
@@ -101,9 +101,9 @@ public class ARCameraController : MonoBehaviour{
 		//height = Screen.width;
 		//width = Screen.height;
 
-		//redTray = GameObject.FindGameObjectWithTag ("redTray").transform;
+		redTray = GameObject.FindGameObjectWithTag ("redTray").transform;
 		//redTray.gameObject.renderer.enabled = false;
-		//blackTray = GameObject.FindGameObjectWithTag ("blackTray").transform;
+		blackTray = GameObject.FindGameObjectWithTag ("blackTray").transform;
 
 		focusedObject = null;
 		selectedObject = null;
