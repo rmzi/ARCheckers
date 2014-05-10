@@ -90,6 +90,7 @@ public class GameScript : MonoBehaviour
 				}
 			}
 		//make trays
+
 		redTray.renderer.material.color = Color.red;
 		blackTray.renderer.material.color = Color.black;
 

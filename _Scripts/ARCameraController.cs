@@ -6,8 +6,20 @@ using System.Collections;
 public class ARCameraController : MonoBehaviour{
 	//GameScript
 	private GameScript game;
+
 	//joystick
-	public Transform joystick;
+	public GUITexture joystick;
+	public float maxDelJoy = 0.05f;
+	public Vector3 oJoyP;
+	public Vector3 delJoy;
+	public Transform joyTran = null;
+	public ARCameraController acam;
+	public Transform joyCN;
+	public bool trans;
+
+	//Trays
+	//private Transform blackTray;
+	//private Transform redTray;
 
 	// Modes
 	// Modes will determine which code to run to increase efficiency of calculations
@@ -73,7 +85,7 @@ public class ARCameraController : MonoBehaviour{
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
-
+		trans = false; 
 		// DESKTOP DEBUG
 		height = Screen.height;
 		width = Screen.width;
@@ -81,6 +93,10 @@ public class ARCameraController : MonoBehaviour{
 		// PHONE DEBUG
 		//height = Screen.width;
 		//width = Screen.height;
+
+		//redTray = GameObject.FindGameObjectWithTag ("redTray").transform;
+		//redTray.gameObject.renderer.enabled = false;
+		//blackTray = GameObject.FindGameObjectWithTag ("blackTray").transform;
 
 		focusedObject = null;
 		selectedObject = null;
@@ -152,6 +168,11 @@ public class ARCameraController : MonoBehaviour{
 
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
+			if (trans){
+				joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+				oJoyP = joystick.transform.position;
+
+			}
 			if(lowMode==BASE_EX_MODE){
 			
 			}else if(lowMode == SCALE_MODE){
@@ -177,6 +198,9 @@ public class ARCameraController : MonoBehaviour{
 			// Prompt user to start game
 				if (GUI.Button (new Rect ((width/2), (height/2), 150, 100), "START")) {
 					lowMode = INSTR_MODE;
+					//redTray.gameObject.renderer.enabled = true;
+					//redTray.gameObject.SetActive(true);
+
 				}
 			}else if(lowMode == INSTR_MODE){
 			//
@@ -217,7 +241,11 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				if (GUI.Button (new Rect ((width-100), (height-100), 100, 100), "Explore")) {
 					highMode = EXPLORE_MODE;
-
+					//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+					//oJoyP = joystick.transform.position;
+					trans = true;
+					//joyCN = (Transform)Instantiate(joyCN, joyCN.position, Quaternion.identity);
+					//joystick.gameObject.transform.parent = transform;
 				}
 				
 				/////////////////
@@ -253,7 +281,7 @@ public class ARCameraController : MonoBehaviour{
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
 			// Translation via Joystick
-			joystick = (Transform)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+			//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 			/////////////////
 			// Translation //
 			/////////////////
@@ -286,15 +314,15 @@ public class ARCameraController : MonoBehaviour{
 			GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN RED", turn);
 			p1 = false;
 		}
-		int number = 8;
+		int number = 12;
 		redP2.normal.textColor = Color.red;
 		redP1.normal.textColor = Color.white;
-		GUI.Label((new Rect ((width-100), 0, 100, 100)),"Player 1", redP1);
-		GUI.Label((new Rect ((width-100), 50, 100, 100)),"Count: "+ number, redP1);
-		GUI.Label((new Rect ((width-100), 100, 100, 100)),"Score: "+ number, redP1);
+		GUI.Label((new Rect ((width-110), 0, 100, 100)),"Player 1", redP1);
+		GUI.Label((new Rect ((width-120), 50, 100, 100)),"Count: "+ number, redP1);
+		GUI.Label((new Rect ((width-120), 100, 100, 100)),"Score: "+ number, redP1);
 		GUI.Label((new Rect ((width-50), 0, 100, 100)),"Player 2", redP2);
-		GUI.Label((new Rect ((width-50), 50, 100, 100)),"Count: "+ number, redP2);
-		GUI.Label((new Rect ((width-50), 100, 100, 100)),"Score: "+ number, redP2);
+		GUI.Label((new Rect ((width-60), 50, 100, 100)),"Count: "+ number, redP2);
+		GUI.Label((new Rect ((width-60), 100, 100, 100)),"Score: "+ number, redP2);
 	}
 	
 	void focusOnObject (Transform obj){
