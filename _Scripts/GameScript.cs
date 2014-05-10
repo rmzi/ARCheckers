@@ -30,7 +30,7 @@ public class GameScript : MonoBehaviour
 		turn = 1;
 		lastMove = new ArrayList ();
 	}
-	public void showMoves(Transform piece){
+	public void showMoves(GameObject piece){
 		Debug.Log ("Piece Spot:"+piece.GetComponent<GamePieceScript>().location.ToString());
 		CheckersMove[] moves = getLegalMoves(turn);
 		foreach (CheckersMove move in moves) {

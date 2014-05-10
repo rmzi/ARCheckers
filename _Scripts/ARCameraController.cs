@@ -249,7 +249,7 @@ public class ARCameraController : MonoBehaviour{
 						selectedObject = focusedObject;
 						lowMode = MOVE_MODE;
 						selectedObject.GetComponent<GamePieceScript>().select();
-						game.showMoves(selectedObject.transform);
+						game.showMoves(selectedObject);
 					}
 				}
 				/////////////////
