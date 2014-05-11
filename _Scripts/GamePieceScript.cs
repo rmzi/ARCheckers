@@ -11,7 +11,7 @@ public class GamePieceScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		transform.tag = "piece";
+		gameObject.tag = "piece";
 		isKing = false;
 		isDead = false;
 	}

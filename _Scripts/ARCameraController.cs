@@ -200,11 +200,15 @@ public class ARCameraController : MonoBehaviour{
 
 			} else if(lowMode == MOVE_MODE){
 				Debug.Log("MOVE_MODE_UPDATE");
-				selectedObject.transform.position = focusPoint;
-				if(selectedObject.transform.position.y < 11.0f)
-					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,11.0f,selectedObject.transform.position.z);
-				if(selectedObject.transform.position.y > 15.0f)
-					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,15.0f,selectedObject.transform.position.z);
+				if(focusPoint.y < 11.0f){
+					RaycastHit hit;
+					if(Physics.Raycast(focusRay, out hit, focusDistance)){
+						if(hit.transform.tag=="space")
+							selectedObject.transform.position = new Vector3(hit.point.x,hit.point.y+1.0f,hit.point.z);
+					}else{
+					}
+				}else
+					selectedObject.transform.position = focusPoint;
 			} else if(lowMode == PASS_MODE){
 				rayToCamera = Board.transform.position - transform.position;
 				Vector2 flattenedRay = new Vector2(rayToCamera.x, rayToCamera.z);
@@ -299,11 +303,13 @@ public class ARCameraController : MonoBehaviour{
 						//check if piece is valid move
 						GameScript.CheckersMove[] valMoves = Board.GetComponent<GameScript>().getLegalMoves(focusedObject);
 						if(valMoves!=null){
-							selectedObject = focusedObject;
-							lowMode = MOVE_MODE;
-							selectedObject.GetComponent<GamePieceScript>().select();
-							game.showMoves(selectedObject);
-							focusedObject = null;
+							if(valMoves.Length>0){
+								selectedObject = focusedObject;
+								lowMode = MOVE_MODE;
+								selectedObject.GetComponent<GamePieceScript>().select();
+								game.showMoves(selectedObject);
+								focusedObject = null;
+							}
 						}else{
 							//dont allow move
 						}
@@ -335,17 +341,32 @@ public class ARCameraController : MonoBehaviour{
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
 
-				selectedObject.transform.position = focusPoint;
+				//selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-100),(height-100), 100, 100), "Place Piece")) {
-					//check if there is another jump to force player to jump
-					selectedObject.GetComponent<GamePieceScript>().resetColor();
-					selectedObject = null;
-					game.stopShowingMoves();
-					lowMode = PASS_MODE;
-					if(game.turn ==1)
-						game.turn=2;
-					else if(game.turn ==2)
-						game.turn =1;
+					//check that it is over a valid spot
+					RaycastHit hit;
+					Vector2 newSpot = new Vector2(-1.0f,-1.0f);
+					if(Physics.Raycast(selectedObject.transform.position,Vector3.down, out hit, focusDistance)){
+						if(hit.transform.tag=="space"){
+							foreach(Object o in game.highlightedCubes){
+								CubeSpaceScript tmpCube = ((GameObject) o).GetComponent<CubeSpaceScript>();
+								if(hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation()==tmpCube.getLocation()){
+									newSpot = hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation();
+								}
+							}
+						}
+					}
+					if(newSpot.x!=-1.0f&&newSpot.y!=-1.0f){
+						//check if there is another jump to force player to jump
+						selectedObject.GetComponent<GamePieceScript>().resetColor();
+						selectedObject = null;
+						game.stopShowingMoves();
+						lowMode = PASS_MODE;
+						if(game.turn ==1)
+							game.turn=2;
+						else if(game.turn ==2)
+							game.turn =1;
+					}
 				 }
 
 				

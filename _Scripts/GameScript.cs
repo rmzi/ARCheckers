@@ -18,7 +18,7 @@ public class GameScript : MonoBehaviour
 	//true when player is done with move
 	public bool doneMove;
 	private bool showingMoves;
-	private ArrayList highlightedCubes;
+	public ArrayList highlightedCubes;
 	private Vector2 currLoc;
 
 
@@ -44,6 +44,8 @@ public class GameScript : MonoBehaviour
 		foreach (CheckersMove move in moves) {
 			if(move.fromCol == piece.GetComponent<GamePieceScript>().location.y && move.fromRow == piece.GetComponent<GamePieceScript>().location.x){
 				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().highlight();
+				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().toggleTrigger();
+				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().toggleCollider();
 				boardPieces[move.fromRow,move.fromCol].GetComponent<CubeSpaceScript>().fromHightlight();
 				highlightedCubes.Add(boardPieces[move.toRow,move.toCol]);
 				highlightedCubes.Add(boardPieces[move.fromRow,move.fromCol]);
@@ -75,11 +77,12 @@ public class GameScript : MonoBehaviour
 			foreach (Object cube in highlightedCubes) {
 				CubeSpaceScript tmpCube = ((GameObject)cube).GetComponent<CubeSpaceScript>();
 				tmpCube.resetColor();
+				tmpCube.toggleTrigger();
+				tmpCube.toggleCollider();
 			}
 			highlightedCubes.Clear();
 		}
 	}
-
 	//Make the board;
 	public void makeBoard(){
 			int boardSize = 8;
@@ -288,6 +291,9 @@ public class GameScript : MonoBehaviour
 			GameObject myPiece = null;
 			Debug.Log ("This player has " + playing.numPieces.ToString ());
 			bool canJump = false;
+			if (r3 > 7 || r3 < 0 || c3 > 7 || c3 < 0) {
+				return false;
+			}
 			foreach (Object p in playing.pieces) {
 					Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
 					if (loc.x == r1 && loc.y == r2) {
@@ -342,6 +348,9 @@ public class GameScript : MonoBehaviour
        * that (r2,c2) is a neighboring square.
        */
 		private bool canMove(int player, int r1, int c1, int r2, int c2) {
+		if (r2 > 7 || r2 < 0 || c2 > 7 || c2 < 0) {
+			return false;
+		}
 		Player playing = currPlayer ();
 		Player other = otherPlayer ();
 		GameObject myPiece = new GameObject();

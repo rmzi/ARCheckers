@@ -11,6 +11,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	private bool isValid;
 	private Color highlightColor;
 	private Color fromColor;
+	public bool isTrigger;
 	Vector2 boardSpot;
 	void Start () {
 		isOccupied = false;
@@ -19,10 +20,18 @@ public class CubeSpaceScript : MonoBehaviour {
 		piece = null;
 		highlightColor = Color.yellow;
 		fromColor = Color.grey;
+		isTrigger = false;
+		toggleCollider ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+	}
+	public void toggleTrigger(){
+		isTrigger = !isTrigger;
+	}
+	public void toggleCollider(){
+		transform.collider.isTrigger = isTrigger;
 	}
 
 	public void setColor(Color c){
@@ -55,6 +64,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	}
 	public void highlight(){
 		transform.gameObject.renderer.material.color = highlightColor;
+		isValid = true;
 	}
 	public void fromHightlight(){
 		transform.gameObject.renderer.material.color = fromColor;
@@ -75,6 +85,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	}
 	public void resetColor(){
 		transform.gameObject.renderer.material.color = color;
+		isValid = false;
 	}
 	public void setPiece(GameObject piece){
 		isOccupied = true;
