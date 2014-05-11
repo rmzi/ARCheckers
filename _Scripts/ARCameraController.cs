@@ -59,6 +59,8 @@ public class ARCameraController : MonoBehaviour{
 	public GameObject ImageTarget;
 	public GameObject Board;
 	public GameObject screenText;
+	public GameObject Player1text;
+	public GameObject Player2text;
 
 
 	// Player Mode
@@ -96,10 +98,17 @@ public class ARCameraController : MonoBehaviour{
 
 	//initial scale of board
 	Vector3 initScale;
-	//textmesh for screen text
+	//textmesh for screen texts
 	TextMesh t; 
+
+	TextMesh t1;
+	TextMesh t2;
+	string s1;
+	string s2;
 	//initial position of board
-	Vector2 initialBoardPosition;
+	Vector3 initialBoardPosition;
+
+
 	
 	// Use this for initialization
 	void Start () {
@@ -137,7 +146,13 @@ public class ARCameraController : MonoBehaviour{
 		initScale = Board.transform.localScale;
 
 		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
-		t.text = "Find Image Target";
+
+
+		int score = 0;
+		//Debug.Log (test);
+		/*t1.text = s1 + "\nScore: " + score;
+		t2.text = s2 + "\nScore: " + score;
+		t.text = "Find Image Target";*/
 		initialBoardPosition = Board.transform.position;
 
 	}
@@ -145,6 +160,7 @@ public class ARCameraController : MonoBehaviour{
 
 	// Update is called once per frame
 	void Update () {
+
 		if(!targetFound) {
 			targetFound = ImageTarget.GetComponent<ImageTargetTracking> ().targetFound;
 			if(targetFound){
@@ -200,11 +216,15 @@ public class ARCameraController : MonoBehaviour{
 
 			} else if(lowMode == MOVE_MODE){
 				Debug.Log("MOVE_MODE_UPDATE");
-				selectedObject.transform.position = focusPoint;
-				if(selectedObject.transform.position.y < 11.0f)
-					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,11.0f,selectedObject.transform.position.z);
-				if(selectedObject.transform.position.y > 15.0f)
-					selectedObject.transform.position = new Vector3(selectedObject.transform.position.x,15.0f,selectedObject.transform.position.z);
+				if(focusPoint.y < 11.0f){
+					RaycastHit hit;
+					if(Physics.Raycast(focusRay, out hit, focusDistance)){
+						if(hit.transform.tag=="space")
+							selectedObject.transform.position = new Vector3(hit.point.x,hit.point.y+1.0f,hit.point.z);
+					}else{
+					}
+				}else
+					selectedObject.transform.position = focusPoint;
 			} else if(lowMode == PASS_MODE){
 				rayToCamera = Board.transform.position - transform.position;
 				Vector2 flattenedRay = new Vector2(rayToCamera.x, rayToCamera.z);
@@ -280,6 +300,14 @@ public class ARCameraController : MonoBehaviour{
 					lowMode = SEL_MODE;
 					gameTurn = true;
 					game.makeBoard ();
+					int score = 0;
+					TextMesh t1	 =(TextMesh)Player1text.GetComponent(typeof(TextMesh));
+					TextMesh t2 =(TextMesh)Player2text.GetComponent(typeof(TextMesh));
+					string s1 = t1.text + "\nScore: ";
+					string s2 = t2.text + "\nScore: ";
+					t1.text = s1 + "\nScore: " + score;
+		t2.text = s2 + "\nScore: " + score;
+		t.text = "Find Image Target";
 				}
 			}
 
@@ -299,11 +327,13 @@ public class ARCameraController : MonoBehaviour{
 						//check if piece is valid move
 						GameScript.CheckersMove[] valMoves = Board.GetComponent<GameScript>().getLegalMoves(focusedObject);
 						if(valMoves!=null){
-							selectedObject = focusedObject;
-							lowMode = MOVE_MODE;
-							selectedObject.GetComponent<GamePieceScript>().select();
-							game.showMoves(selectedObject);
-							focusedObject = null;
+							if(valMoves.Length>0){
+								selectedObject = focusedObject;
+								lowMode = MOVE_MODE;
+								selectedObject.GetComponent<GamePieceScript>().select();
+								game.showMoves(selectedObject);
+								focusedObject = null;
+							}
 						}else{
 							//dont allow move
 						}
@@ -335,17 +365,35 @@ public class ARCameraController : MonoBehaviour{
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
 
-				selectedObject.transform.position = focusPoint;
+				//selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-100),(height-100), 100, 100), "Place Piece")) {
-					//check if there is another jump to force player to jump
-					selectedObject.GetComponent<GamePieceScript>().resetColor();
-					selectedObject = null;
-					game.stopShowingMoves();
-					lowMode = PASS_MODE;
-					if(game.turn ==1)
-						game.turn=2;
-					else if(game.turn ==2)
-						game.turn =1;
+					//check that it is over a valid spot
+					RaycastHit hit;
+					Vector2 newSpot = new Vector2(-1.0f,-1.0f);
+					if(Physics.Raycast(selectedObject.transform.position,Vector3.down, out hit, focusDistance)){
+						if(hit.transform.tag=="space"){
+							foreach(Object o in game.highlightedCubes){
+								CubeSpaceScript tmpCube = ((GameObject) o).GetComponent<CubeSpaceScript>();
+								if(hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation()==tmpCube.getLocation()){
+									newSpot = hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation();
+								}
+							}
+						}
+					}
+					if(newSpot.x!=-1.0f&&newSpot.y!=-1.0f){
+						//check if there is another jump to force player to jump
+						selectedObject.GetComponent<GamePieceScript>().resetColor();
+						GamePieceScript script = selectedObject.GetComponent<GamePieceScript>();
+						game.makeMove(new GameScript.CheckersMove((int)script.location.x, (int) script.location.y, (int) newSpot.x, (int) newSpot.y));
+						script.location = newSpot;
+						selectedObject = null;
+						game.stopShowingMoves();
+						lowMode = PASS_MODE;
+						if(game.turn ==1)
+							game.turn=2;
+						else if(game.turn ==2)
+							game.turn =1;
+					}
 				 }
 
 				
@@ -365,6 +413,33 @@ public class ARCameraController : MonoBehaviour{
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
 			// Translation via Joystick
+			if (GUI.Button (new Rect ((0), (height-75), 50, 50), "<")){
+				Board.transform.Translate(transform.right *3);
+	
+
+			}
+			else if (GUI.Button (new Rect ((100), (height-75), 50, 50), ">")){
+				Board.transform.Translate(transform.right *-3);
+
+
+				
+			}
+			else if (GUI.Button (new Rect ((50), (height-100), 50, 50), "^")){
+				//if(game.turn==1){
+					Board.transform.Translate(transform.forward*-3);
+				//if(game.turn==2){
+					//Board.transform.position += new Vector3 (1, 0, 0);}
+				
+			}
+			else if(GUI.Button (new Rect ((50), (height-50), 50, 50), "v")){
+			Board.transform.Translate(transform.forward*3);
+
+//				if(game.turn==1){
+//					Board.transform.position += new Vector3 (1, 0, 0);}
+//				if(game.turn==2){
+//					Board.transform.position += new Vector3 (-1, 0, 0);}
+				
+			}
 
 			//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
@@ -383,6 +458,7 @@ public class ARCameraController : MonoBehaviour{
 				highMode = PLAY_MODE;
 				lowMode = SEL_MODE;
 				Board.transform.localScale = initScale;
+				Board.transform.position = initialBoardPosition;
 			}
 			
 			/////////////////

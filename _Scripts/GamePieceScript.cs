@@ -11,7 +11,7 @@ public class GamePieceScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		transform.tag = "piece";
+		gameObject.tag = "piece";
 		isKing = false;
 		isDead = false;
 	}
@@ -44,5 +44,8 @@ public class GamePieceScript : MonoBehaviour {
 	}
 	public void makeKing(){
 		isKing = true;
+	}
+	public void setLocation(Vector3 loc){
+		transform.position = loc;
 	}
 }

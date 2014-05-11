@@ -8,8 +8,8 @@ public class GameScript : MonoBehaviour
 	private GameObject[,] boardPieces;
 
 	public int turn;
-	private Player player1;
-	private Player player2;
+	public Player player1;
+	public Player player2;
 	private GameObject board;
 	private GameObject redTray;
 	private GameObject blackTray;
@@ -18,7 +18,7 @@ public class GameScript : MonoBehaviour
 	//true when player is done with move
 	public bool doneMove;
 	private bool showingMoves;
-	private ArrayList highlightedCubes;
+	public ArrayList highlightedCubes;
 	private Vector2 currLoc;
 
 
@@ -44,6 +44,8 @@ public class GameScript : MonoBehaviour
 		foreach (CheckersMove move in moves) {
 			if(move.fromCol == piece.GetComponent<GamePieceScript>().location.y && move.fromRow == piece.GetComponent<GamePieceScript>().location.x){
 				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().highlight();
+				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().toggleTrigger();
+				boardPieces[move.toRow,move.toCol].GetComponent<CubeSpaceScript>().toggleCollider();
 				boardPieces[move.fromRow,move.fromCol].GetComponent<CubeSpaceScript>().fromHightlight();
 				highlightedCubes.Add(boardPieces[move.toRow,move.toCol]);
 				highlightedCubes.Add(boardPieces[move.fromRow,move.fromCol]);
@@ -75,11 +77,12 @@ public class GameScript : MonoBehaviour
 			foreach (Object cube in highlightedCubes) {
 				CubeSpaceScript tmpCube = ((GameObject)cube).GetComponent<CubeSpaceScript>();
 				tmpCube.resetColor();
+				tmpCube.toggleTrigger();
+				tmpCube.toggleCollider();
 			}
 			highlightedCubes.Clear();
 		}
 	}
-
 	//Make the board;
 	public void makeBoard(){
 			int boardSize = 8;
@@ -128,9 +131,9 @@ public class GameScript : MonoBehaviour
 	}
 
 	public bool makeMove(CheckersMove move){
+		currPlayer ().pieceAt(move.fromRow, move.fromCol).GetComponent<GamePieceScript>().setLocation(nextLocation);
 		currPlayer ().pieceAt (move.fromRow, move.fromCol).GetComponent<GamePieceScript> ().location = new Vector2 ((float)move.toRow, (float)move.toCol);
-		Vector3 nextLocation = new Vector3(-35 + 10f * move.toRow, 10, -35 + 10f * move.toCol);
-		currPlayer ().pieceAt (move.fromRow, move.fromCol).transform.position = nextLocation;
+
 		if (move.isJump ()) {
 			currPlayer().eatPiece(otherPlayer().losePiece(move.fromRow+(move.toRow-move.fromRow),move.fromCol+(move.toCol-move.fromCol)));
 			if(getLegalJumpsFrom(turn,move.toRow,move.toCol).Length > 0){
@@ -157,6 +160,7 @@ public class GameScript : MonoBehaviour
 			player = p;
 			numPieces = 0;
 			pieces = new ArrayList();
+			eaten = new ArrayList();
 		}
 		public void addPiece(GameObject p){
 			pieces.Add(p);
@@ -171,6 +175,9 @@ public class GameScript : MonoBehaviour
 		//Adds the players piece to the tray
 		public void eatPiece(GameObject piece){
 			eaten.Add (piece);
+
+			Vector3 nextLocation = new Vector3(-35 + 10f * move.toRow, 10, -35 + 10f * move.toCol);
+			piece.transform.location = new Vector3 ();
 		}
 		public GameObject losePiece(int row, int col){
 			for (int i = 0; i < pieces.Count; i++) {
@@ -288,20 +295,33 @@ public class GameScript : MonoBehaviour
 			GameObject myPiece = null;
 			Debug.Log ("This player has " + playing.numPieces.ToString ());
 			bool canJump = false;
+			if (r3 > 7 || r3 < 0 || c3 > 7 || c3 < 0) {
+				return false;
+			}
 			foreach (Object p in playing.pieces) {
 					Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
-					if (loc.x == r1 && loc.y == r2) {
+					if (loc.x == r1 && loc.y == c1) {
 							myPiece = (GameObject)p;
 					} else if (loc.x == r3 && loc.y == c3) {
 							return false;
 					}
 			}
+			
 			if (!myPiece.GetComponent<GamePieceScript> ().isKing) {
 					if (turn == 1 && r3 < r1) {
 							return false;
 					} else if (turn == 2 && r1 < r3) {
 							return false;
 					}
+
+				foreach (Object p in other.pieces) {
+					Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
+					if (loc.x == r3 && loc.y == c3) {
+						return false;
+					} else if (loc.x == r2 && loc.y == c2) {
+						canJump = true;
+					}
+				}
 			} else {
 					foreach (Object p in other.pieces) {
 							Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
@@ -342,14 +362,17 @@ public class GameScript : MonoBehaviour
        * that (r2,c2) is a neighboring square.
        */
 		private bool canMove(int player, int r1, int c1, int r2, int c2) {
+		if (r2 > 7 || r2 < 0 || c2 > 7 || c2 < 0) {
+			return false;
+		}
 		Player playing = currPlayer ();
 		Player other = otherPlayer ();
 		GameObject myPiece = new GameObject();
-		Debug.Log("This player has "+playing.numPieces.ToString());
+		Debug.Log("This player has " + playing.numPieces.ToString());
 		bool canJump = false;
 		foreach (Object p in playing.pieces) {
 			Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript>().location;
-			if(loc.x==r1&&loc.y==r2){
+			if(loc.x==r1&&loc.y==c1){
 				myPiece = (GameObject)p;
 			}else if(loc.x==r2&&loc.y==c2){
 				return false;
