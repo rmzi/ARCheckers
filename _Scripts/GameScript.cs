@@ -124,9 +124,10 @@ public class GameScript : MonoBehaviour
 		currPlayer ().pieceAt (move.fromRow, move.fromCol).transform.position = nextLocation;
 		if (move.isJump ()) {
 			currPlayer().eatPiece(otherPlayer().losePiece(move.fromRow+(move.toRow-move.fromRow),move.fromCol+(move.toCol-move.fromCol)));
-			if(getLegalJumpsFrom(turn,move.toRow,move.toCol).Length){
-				
+			if(getLegalJumpsFrom(turn,move.toRow,move.toCol).Length > 0){
+				return true;
 			}
+			return false;
 		}
 		else{
 			return false;
@@ -166,7 +167,9 @@ public class GameScript : MonoBehaviour
 			for (int i = 0; i < pieces.Count; i++) {
 				Vector2 loc = ((GameObject)pieces[i]).GetComponent<GamePieceScript>().location;
 				if(loc.x ==(float)row && loc.y == (float)col){
-					return (GameObject)pieces.RemoveAt(i);
+					GameObject piece = (GameObject)pieces[i];
+					pieces.RemoveAt(i);
+					return piece;
 				}
 			}
 			return null;
