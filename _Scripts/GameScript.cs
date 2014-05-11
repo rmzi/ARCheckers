@@ -296,18 +296,28 @@ public class GameScript : MonoBehaviour
 			}
 			foreach (Object p in playing.pieces) {
 					Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
-					if (loc.x == r1 && loc.y == r2) {
+					if (loc.x == r1 && loc.y == c1) {
 							myPiece = (GameObject)p;
 					} else if (loc.x == r3 && loc.y == c3) {
 							return false;
 					}
 			}
+			
 			if (!myPiece.GetComponent<GamePieceScript> ().isKing) {
 					if (turn == 1 && r3 < r1) {
 							return false;
 					} else if (turn == 2 && r1 < r3) {
 							return false;
 					}
+
+				foreach (Object p in other.pieces) {
+					Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
+					if (loc.x == r3 && loc.y == c3) {
+						return false;
+					} else if (loc.x == r2 && loc.y == c2) {
+						canJump = true;
+					}
+				}
 			} else {
 					foreach (Object p in other.pieces) {
 							Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript> ().location;
@@ -354,11 +364,11 @@ public class GameScript : MonoBehaviour
 		Player playing = currPlayer ();
 		Player other = otherPlayer ();
 		GameObject myPiece = new GameObject();
-		Debug.Log("This player has "+playing.numPieces.ToString());
+		Debug.Log("This player has " + playing.numPieces.ToString());
 		bool canJump = false;
 		foreach (Object p in playing.pieces) {
 			Vector2 loc = ((GameObject)p).GetComponent<GamePieceScript>().location;
-			if(loc.x==r1&&loc.y==r2){
+			if(loc.x==r1&&loc.y==c1){
 				myPiece = (GameObject)p;
 			}else if(loc.x==r2&&loc.y==c2){
 				return false;

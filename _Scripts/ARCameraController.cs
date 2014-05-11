@@ -359,6 +359,9 @@ public class ARCameraController : MonoBehaviour{
 					if(newSpot.x!=-1.0f&&newSpot.y!=-1.0f){
 						//check if there is another jump to force player to jump
 						selectedObject.GetComponent<GamePieceScript>().resetColor();
+						GamePieceScript script = selectedObject.GetComponent<GamePieceScript>();
+						game.makeMove(new GameScript.CheckersMove(script.location.x, script.location.y, newSpot.x, newSpot.y));
+						script.location = newSpot;
 						selectedObject = null;
 						game.stopShowingMoves();
 						lowMode = PASS_MODE;
