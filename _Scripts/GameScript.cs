@@ -10,9 +10,9 @@ public class GameScript : MonoBehaviour
 	public int turn;
 	public Player player1;
 	public Player player2;
-	private GameObject board;
-	private GameObject redTray;
-	private GameObject blackTray;
+	public GameObject board;
+	public static GameObject redTray;
+	public static GameObject blackTray;
 	//arraylist that makes up the last move for the previous player
 	private ArrayList lastMove;
 	//true when player is done with move
@@ -131,12 +131,14 @@ public class GameScript : MonoBehaviour
 	}
 
 	public bool makeMove(CheckersMove move){
+		Vector3 nextLocation = new Vector3(-35 + 10f * move.toRow, 10, -35 + 10f * move.toCol); 
+
 		currPlayer ().pieceAt(move.fromRow, move.fromCol).GetComponent<GamePieceScript>().setLocation(nextLocation);
 		currPlayer ().pieceAt (move.fromRow, move.fromCol).GetComponent<GamePieceScript> ().location = new Vector2 ((float)move.toRow, (float)move.toCol);
 
 		if (move.isJump ()) {
-			currPlayer().eatPiece(otherPlayer().losePiece(move.fromRow+(move.toRow-move.fromRow),move.fromCol+(move.toCol-move.fromCol)));
-			if(getLegalJumpsFrom(turn,move.toRow,move.toCol).Length > 0){
+			currPlayer().eatPiece(otherPlayer().losePiece(move.fromRow+(move.toRow-move.fromRow)/2,move.fromCol+(move.toCol-move.fromCol) /2));
+			if(getLegalJumpsFrom(turn,move.toRow,move.toCol) != null){
 				return true;
 			}
 			return false;
@@ -175,9 +177,20 @@ public class GameScript : MonoBehaviour
 		//Adds the players piece to the tray
 		public void eatPiece(GameObject piece){
 			eaten.Add (piece);
+			GameObject tray;
+			if (player == 1) {
+				tray = blackTray;
+			} else {
+				tray = redTray;
+			}
+			int posX = eaten.Count % 6;
+			int posZ = -5;
 
-			Vector3 nextLocation = new Vector3(-35 + 10f * move.toRow, 10, -35 + 10f * move.toCol);
-			piece.transform.location = new Vector3 ();
+			if(eaten.Count > 6){
+				posZ = 5;
+			} 
+			Vector3 offset = new Vector3(-35 + 10 * posX, -4, posZ);
+			piece.transform.position = (tray.transform.position) - offset;
 		}
 		public GameObject losePiece(int row, int col){
 			for (int i = 0; i < pieces.Count; i++) {
@@ -190,6 +203,7 @@ public class GameScript : MonoBehaviour
 			}
 			return null;
 		}
+
 		public GameObject pieceAt(int row,int col){
 			foreach (Object go in pieces) {
 				Vector2 loc =((GameObject)go).GetComponent<GamePieceScript>().location;

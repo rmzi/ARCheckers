@@ -236,10 +236,15 @@ public class ARCameraController : MonoBehaviour{
 					radialAngle = 360 - radialAngle;
 
 				if(radialAngle > 90.0 && radialAngle < 270.0){
-					Debug.Log("In Player2 position");
-
+					if(game.turn == 2){
+						Debug.Log("In Player2 position");
+						lowMode = SEL_MODE;
+					}
 				} else {
 					Debug.Log("In Player1 position");
+					if(game.turn == 1){
+						lowMode = SEL_MODE;
+					}
 				}
 			}
 		} else if(highMode == EXPLORE_MODE){
@@ -313,7 +318,7 @@ public class ARCameraController : MonoBehaviour{
 
 		} else if (highMode == PLAY_MODE) {
 			// PLAY MODE
-			
+			t.text = "Your Turn Player " + game.turn;
 			if(lowMode == SEL_MODE){
 				// SELECTION MODE
 				///////////////
@@ -404,11 +409,8 @@ public class ARCameraController : MonoBehaviour{
 					//translateMode = true;
 				}
 			}else if(lowMode == PASS_MODE){
-				if (GUI.Button (new Rect ((width/2-75),(height/2-50), 150, 100), "IM HERE")) {
-					lowMode = SEL_MODE;
-
-
-				}
+				// Ask player to return to their side of the board
+				t.text = "Please pass the phone to Player " + game.turn;
 			}
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
@@ -472,13 +474,13 @@ public class ARCameraController : MonoBehaviour{
 			}
 		}
 
-		if (gameTurn) {
+		/*if (gameTurn) {
 						//player message
 						if (game.turn == 1) {
 
 								turn.normal.textColor = Color.magenta;
 								//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN BLACK", turn);
-								t.text = "Your Turn Black";
+								
 								//p2 = false;
 						}
 						if (game.turn == 2) {
@@ -487,7 +489,7 @@ public class ARCameraController : MonoBehaviour{
 								t.text = "Your Turn Red";
 								//p1 = false;
 						}
-				}
+				}*/
 		int number = 12;
 
 		redP2.normal.textColor = Color.red;
