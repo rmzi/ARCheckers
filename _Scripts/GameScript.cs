@@ -8,8 +8,8 @@ public class GameScript : MonoBehaviour
 	private GameObject[,] boardPieces;
 
 	public int turn;
-	private Player player1;
-	private Player player2;
+	public Player player1;
+	public Player player2;
 	private GameObject board;
 	private GameObject redTray;
 	private GameObject blackTray;
