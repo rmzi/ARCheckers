@@ -8,8 +8,8 @@ public class GameScript : MonoBehaviour
 	private GameObject[,] boardPieces;
 
 	public int turn;
-	private Player player1;
-	private Player player2;
+	public Player player1;
+	public Player player2;
 	private GameObject board;
 	private GameObject redTray;
 	private GameObject blackTray;
@@ -131,9 +131,9 @@ public class GameScript : MonoBehaviour
 	}
 
 	public bool makeMove(CheckersMove move){
+		currPlayer ().pieceAt(move.fromRow, move.fromCol).GetComponent<GamePieceScript>().setLocation(nextLocation);
 		currPlayer ().pieceAt (move.fromRow, move.fromCol).GetComponent<GamePieceScript> ().location = new Vector2 ((float)move.toRow, (float)move.toCol);
-		Vector3 nextLocation = new Vector3(-35 + 10f * move.toRow, 10, -35 + 10f * move.toCol);
-		currPlayer ().pieceAt (move.fromRow, move.fromCol).transform.position = nextLocation;
+
 		if (move.isJump ()) {
 			currPlayer().eatPiece(otherPlayer().losePiece(move.fromRow+(move.toRow-move.fromRow),move.fromCol+(move.toCol-move.fromCol)));
 			if(getLegalJumpsFrom(turn,move.toRow,move.toCol).Length > 0){
@@ -160,6 +160,7 @@ public class GameScript : MonoBehaviour
 			player = p;
 			numPieces = 0;
 			pieces = new ArrayList();
+			eaten = new ArrayList();
 		}
 		public void addPiece(GameObject p){
 			pieces.Add(p);
@@ -174,6 +175,9 @@ public class GameScript : MonoBehaviour
 		//Adds the players piece to the tray
 		public void eatPiece(GameObject piece){
 			eaten.Add (piece);
+
+			Vector3 nextLocation = new Vector3(-35 + 10f * move.toRow, 10, -35 + 10f * move.toCol);
+			piece.transform.location = new Vector3 ();
 		}
 		public GameObject losePiece(int row, int col){
 			for (int i = 0; i < pieces.Count; i++) {

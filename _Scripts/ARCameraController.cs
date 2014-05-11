@@ -59,6 +59,8 @@ public class ARCameraController : MonoBehaviour{
 	public GameObject ImageTarget;
 	public GameObject Board;
 	public GameObject screenText;
+	public GameObject Player1text;
+	public GameObject Player2text;
 
 
 	// Player Mode
@@ -96,10 +98,17 @@ public class ARCameraController : MonoBehaviour{
 
 	//initial scale of board
 	Vector3 initScale;
-	//textmesh for screen text
+	//textmesh for screen texts
 	TextMesh t; 
+
+	TextMesh t1;
+	TextMesh t2;
+	string s1;
+	string s2;
 	//initial position of board
-	Vector2 initialBoardPosition;
+	Vector3 initialBoardPosition;
+
+
 	
 	// Use this for initialization
 	void Start () {
@@ -137,7 +146,13 @@ public class ARCameraController : MonoBehaviour{
 		initScale = Board.transform.localScale;
 
 		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
-		t.text = "Find Image Target";
+
+
+		int score = 0;
+		//Debug.Log (test);
+		/*t1.text = s1 + "\nScore: " + score;
+		t2.text = s2 + "\nScore: " + score;
+		t.text = "Find Image Target";*/
 		initialBoardPosition = Board.transform.position;
 
 	}
@@ -145,6 +160,7 @@ public class ARCameraController : MonoBehaviour{
 
 	// Update is called once per frame
 	void Update () {
+
 		if(!targetFound) {
 			targetFound = ImageTarget.GetComponent<ImageTargetTracking> ().targetFound;
 			if(targetFound){
@@ -284,6 +300,14 @@ public class ARCameraController : MonoBehaviour{
 					lowMode = SEL_MODE;
 					gameTurn = true;
 					game.makeBoard ();
+					int score = 0;
+					TextMesh t1	 =(TextMesh)Player1text.GetComponent(typeof(TextMesh));
+					TextMesh t2 =(TextMesh)Player2text.GetComponent(typeof(TextMesh));
+					string s1 = t1.text + "\nScore: ";
+					string s2 = t2.text + "\nScore: ";
+					t1.text = s1 + "\nScore: " + score;
+		t2.text = s2 + "\nScore: " + score;
+		t.text = "Find Image Target";
 				}
 			}
 
@@ -360,7 +384,7 @@ public class ARCameraController : MonoBehaviour{
 						//check if there is another jump to force player to jump
 						selectedObject.GetComponent<GamePieceScript>().resetColor();
 						GamePieceScript script = selectedObject.GetComponent<GamePieceScript>();
-						game.makeMove(new GameScript.CheckersMove(script.location.x, script.location.y, newSpot.x, newSpot.y));
+						game.makeMove(new GameScript.CheckersMove((int)script.location.x, (int) script.location.y, (int) newSpot.x, (int) newSpot.y));
 						script.location = newSpot;
 						selectedObject = null;
 						game.stopShowingMoves();
@@ -389,6 +413,33 @@ public class ARCameraController : MonoBehaviour{
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
 			// Translation via Joystick
+			if (GUI.Button (new Rect ((0), (height-75), 50, 50), "<")){
+				Board.transform.Translate(transform.right *3);
+	
+
+			}
+			else if (GUI.Button (new Rect ((100), (height-75), 50, 50), ">")){
+				Board.transform.Translate(transform.right *-3);
+
+
+				
+			}
+			else if (GUI.Button (new Rect ((50), (height-100), 50, 50), "^")){
+				//if(game.turn==1){
+					Board.transform.Translate(transform.forward*-3);
+				//if(game.turn==2){
+					//Board.transform.position += new Vector3 (1, 0, 0);}
+				
+			}
+			else if(GUI.Button (new Rect ((50), (height-50), 50, 50), "v")){
+			Board.transform.Translate(transform.forward*3);
+
+//				if(game.turn==1){
+//					Board.transform.position += new Vector3 (1, 0, 0);}
+//				if(game.turn==2){
+//					Board.transform.position += new Vector3 (-1, 0, 0);}
+				
+			}
 
 			//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
@@ -407,6 +458,7 @@ public class ARCameraController : MonoBehaviour{
 				highMode = PLAY_MODE;
 				lowMode = SEL_MODE;
 				Board.transform.localScale = initScale;
+				Board.transform.position = initialBoardPosition;
 			}
 			
 			/////////////////

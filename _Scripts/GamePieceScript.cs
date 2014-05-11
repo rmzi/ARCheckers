@@ -45,4 +45,7 @@ public class GamePieceScript : MonoBehaviour {
 	public void makeKing(){
 		isKing = true;
 	}
+	public void setLocation(Vector3 loc){
+		transform.position = loc;
+	}
 }
