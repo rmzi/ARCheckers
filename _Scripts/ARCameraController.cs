@@ -8,20 +8,41 @@ public class ARCameraController : MonoBehaviour{
 	private GameScript game;
 
 	//joystick
+	public bool trans;
 	public GUITexture joystick;
+    public Vector3 oJoyP;
+
+	/*class Boundary{
+		public Vector2 min = Vector2.zero;
+		public Vector2 max = Vector2.zero;
+	}
+	//public GameObject joystickPrefab;
+	//joystick graphic
+	public GUITexture joystick;					//joystick graphic
 	public float maxDelJoy = 0.05f;
 	public Vector3 oJoyP;
 	public Vector3 delJoy;
-	public Transform joyTran = null;
-	public ARCameraController acam;
-	public Transform joyCN;
 	public bool trans;
+	private static float tapTimeDelta = 0.3f;	//Time allowed between taps
+	public Rect touchZone;	
+	public bool touchPad;						//is this a touchpad?
+	public Vector2 position;
+	public int tapCount;						//current tap count
+	private int lastFingerId = -1;				//Finger last used for this joystick
+	private float tapTimeWindow; 				//How much time there is left for the tap to occur
+	private Vector2 fingerDownPos;
+	private float fingerDownTime;
+	private float firstDeltaTime = 0.05f;
+	private Rect defaultRect;					//Default position/extents of joystick graphic
+	private Boundary joyBoundary = new Boundary(); //Boundary for joystick graphic
+	private Vector2 guiTouchOffset;				//Offset to apply to touch input
+	private Vector2 guiCenter;					//Center of joystick*/
+
+
 
 	//Trays
 	private Transform blackTray;
 	private Transform redTray;
-
-
 
 	// Modes
 	// Modes will determine which code to run to increase efficiency of calculations
@@ -108,6 +129,7 @@ public class ARCameraController : MonoBehaviour{
 	
 	// Use this for initialization
 	void Start () {
+		//joystick = (GameObject)Instantiate(joystickPrefab, joystickPrefab.transform.position, Quaternion.identity);
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
 		trans = false; 
 		// DESKTOP DEBUG
@@ -144,6 +166,7 @@ public class ARCameraController : MonoBehaviour{
 		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
 		t.text = "Find Image Target";
 		initialBoardPosition = Board.transform.position;
+	
 
 	}
 
@@ -229,11 +252,12 @@ public class ARCameraController : MonoBehaviour{
 			}
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
-			/*if (trans){
+			if (trans){
 				joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 				oJoyP = joystick.transform.position;
 
-			}*/
+			}
+			//transStick tJoy = joystick.GetComponent<transStick>();
 			if(lowMode==BASE_EX_MODE){
 			
 			}else if(lowMode == SCALE_MODE){
@@ -325,17 +349,46 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				if (GUI.Button (new Rect ((width-200), (height-100), 100, 100), "Explore")) {
 					highMode = EXPLORE_MODE;
-					//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
-					//oJoyP = joystick.transform.position;
 					trans = true;
 					if (trans){
+
 						joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
-						oJoyP = joystick.transform.position;
-						
+					    oJoyP = joystick.transform.position;
+
+					   // transStick tJoy = new transStick();
+						//transStick tJoy = joystick.GetComponent<transStick>();
+						//Joystick
+						/*joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+						//oJoyP = joystick.transform.position;
+						//joystick = GetComponent(GUITexture);	//cache component
+						defaultRect = joystick.pixelInset;		//store default rect
+						defaultRect.x += transform.position.x*width;
+						defaultRect.y += transform.position.y*height;
+						Vector2 temp = transform.position;
+						temp.x = 0.0f;
+						temp.y = 0.0f;
+						transform.position = temp;
+
+
+						if(touchPad){
+							touchZone = defaultRect;
+						}
+						else{
+							//touch input to match w top left
+							guiTouchOffset.x = defaultRect.width*0.5f;
+							guiTouchOffset.y = defaultRect.height*0.5f;
+							//cache gui center
+							guiCenter.x = defaultRect.x + guiTouchOffset.x;
+							guiCenter.y = defaultRect.y + guiTouchOffset.y;
+							//gui boundary
+							joyBoundary.min.x = defaultRect.x - guiTouchOffset.x;
+							joyBoundary.max.x = defaultRect.x + guiTouchOffset.x;
+							joyBoundary.min.y = defaultRect.y - guiTouchOffset.y;
+							joyBoundary.max.y = defaultRect.y + guiTouchOffset.y;
+						}*/
 					}
-					//joyCN = (Transform)Instantiate(joyCN, joyCN.position, Quaternion.identity);
 					//joystick.gameObject.transform.parent = transform;
-				}
+				} //end explore
 				
 				/////////////////
 				//   NewGame   //
@@ -382,7 +435,7 @@ public class ARCameraController : MonoBehaviour{
 			// EXPLORE MODE
 			// Translation via Joystick
 
-			//          joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+			          joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
 			//joystick = (Transform)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
