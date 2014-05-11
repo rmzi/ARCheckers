@@ -97,7 +97,12 @@ public class ARCameraController : MonoBehaviour{
 	//initial scale of board
 	Vector3 initScale;
 	//textmesh for screen text
-	TextMesh t; 
+	TextMesh t;
+
+	//Scrollbar Game Instructions
+	private Vector2 scrollViewVector = Vector2.zero;
+	private string innerText = "1. Black moves first. Players then alternate turns.\n\n2. Pieces always move diagonally, only on black squares. Single pieces (non-Kings) are always limited to forward moves (toward the opponent).\n\n3.	A piece making a non-capturing move (not involving a jump) may move only one square.\n\n4. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.\n\n5. When a piece is captured, it is removed from the board.\n\n6. If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.\n\n7. When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece.\n\n8. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)\n\n9. Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent).\n\n10. A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.";
+		
 	//initial position of board
 	Vector2 initialBoardPosition;
 	
@@ -224,11 +229,11 @@ public class ARCameraController : MonoBehaviour{
 			}
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
-			if (trans){
+			/*if (trans){
 				joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 				oJoyP = joystick.transform.position;
 
-			}
+			}*/
 			if(lowMode==BASE_EX_MODE){
 			
 			}else if(lowMode == SCALE_MODE){
@@ -270,11 +275,17 @@ public class ARCameraController : MonoBehaviour{
 			}else if(lowMode == INSTR_MODE){
 			//
 				turn.normal.textColor = Color.magenta;
+				turn.fontSize = 20;
+				//style to wrap text
 				wrap.normal.textColor = Color.magenta;
-				//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"INSTRUCTIONS", turn);
-				t.text = "Instructions\n\nBlack moves first. Players alternate turns\nOnly move diagonally on dark squres.\nA player wins when opponent can't make any \nmoves or is left without pieces.";
 				wrap.wordWrap = true;
-				//GUI.Label((new Rect (((width/5)-50),100, (width-200), (height-200))),"Black moves first. Players then alternate moves.Moves are allowed only on the dark squares, so pieces always move diagonally. Single pieces are always limited to forward moves (toward the opponent). A piece making a non-capturing move (not involving a jump) may move only one square. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.When a piece is captured, it is removed from the board.If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent). A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.",wrap);
+				GUI.Label((new Rect (25,0, 150, 50)),"INSTRUCTIONS", turn);
+				// Begin the ScrollView
+				scrollViewVector = GUI.BeginScrollView (new Rect (25, 30, (3*(width/4)), (3*(height/4))), scrollViewVector, new Rect (0, 0, width, (height)));
+				// Put something inside the ScrollView
+				innerText = GUI.TextArea (new Rect (0, 0, width, (height)), innerText, wrap);
+				// End the ScrollView
+				GUI.EndScrollView();
 				if (GUI.Button (new Rect ((width-150), (height-100), 150, 100), "Continue")) {
 					highMode = PLAY_MODE;
 					lowMode = SEL_MODE;
@@ -317,6 +328,11 @@ public class ARCameraController : MonoBehaviour{
 					//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 					//oJoyP = joystick.transform.position;
 					trans = true;
+					if (trans){
+						joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+						oJoyP = joystick.transform.position;
+						
+					}
 					//joyCN = (Transform)Instantiate(joyCN, joyCN.position, Quaternion.identity);
 					//joystick.gameObject.transform.parent = transform;
 				}
@@ -366,7 +382,7 @@ public class ARCameraController : MonoBehaviour{
 			// EXPLORE MODE
 			// Translation via Joystick
 
-			joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+			//          joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
 			//joystick = (Transform)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
@@ -416,10 +432,10 @@ public class ARCameraController : MonoBehaviour{
 
 		redP2.normal.textColor = Color.red;
 		redP1.normal.textColor = Color.white;
-		GUI.Label((new Rect ((width-110), 0, 100, 100)),"Player 1", redP1);
+		GUI.Label((new Rect ((width-120), 0, 100, 100)),"Player 1", redP1);
 		GUI.Label((new Rect ((width-120), 50, 100, 100)),"Count: "+ number, redP1);
 		GUI.Label((new Rect ((width-120), 100, 100, 100)),"Score: "+ number, redP1);
-		GUI.Label((new Rect ((width-50), 0, 100, 100)),"Player 2", redP2);
+		GUI.Label((new Rect ((width-60), 0, 100, 100)),"Player 2", redP2);
 		GUI.Label((new Rect ((width-60), 50, 100, 100)),"Count: "+ number, redP2);
 		GUI.Label((new Rect ((width-60), 100, 100, 100)),"Score: "+ number, redP2);
 	}
