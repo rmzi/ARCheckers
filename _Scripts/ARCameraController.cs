@@ -13,9 +13,9 @@ public class ARCameraController : MonoBehaviour{
 	public Vector3 oJoyP;
 	public Vector3 delJoy;
 	public Transform joyTran = null;
-	public ARCameraController acam;
-	public Transform joyCN;
-	public bool trans;
+	//public ARCameraController acam;
+	//public Transform joyCN;
+	//public bool trans;
 
 	//Trays
 	private Transform blackTray;
@@ -104,7 +104,7 @@ public class ARCameraController : MonoBehaviour{
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
-		trans = false; 
+		//trans = false; 
 		// DESKTOP DEBUG
 		height = Screen.height;
 		width = Screen.width;
@@ -224,11 +224,11 @@ public class ARCameraController : MonoBehaviour{
 			}
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
-			if (trans){
-				joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
-				oJoyP = joystick.transform.position;
+			//if (trans){
+				//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+				//oJoyP = joystick.transform.position;
 
-			}
+			//}
 			if(lowMode==BASE_EX_MODE){
 			
 			}else if(lowMode == SCALE_MODE){
@@ -316,7 +316,7 @@ public class ARCameraController : MonoBehaviour{
 					highMode = EXPLORE_MODE;
 					//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 					//oJoyP = joystick.transform.position;
-					trans = true;
+					//trans = true;
 					//joyCN = (Transform)Instantiate(joyCN, joyCN.position, Quaternion.identity);
 					//joystick.gameObject.transform.parent = transform;
 				}
@@ -337,10 +337,10 @@ public class ARCameraController : MonoBehaviour{
 
 				selectedObject.transform.position = focusPoint;
 				if (GUI.Button (new Rect ((width-100),(height-100), 100, 100), "Place Piece")) {
+					//check if there is another jump to force player to jump
 					selectedObject.GetComponent<GamePieceScript>().resetColor();
 					selectedObject = null;
 					game.stopShowingMoves();
-					//check if there is another jump to force player to jump
 					lowMode = PASS_MODE;
 					if(game.turn ==1)
 						game.turn=2;
@@ -366,7 +366,7 @@ public class ARCameraController : MonoBehaviour{
 			// EXPLORE MODE
 			// Translation via Joystick
 
-			joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
+			//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 
 			//joystick = (Transform)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
 

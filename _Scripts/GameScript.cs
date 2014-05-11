@@ -21,6 +21,7 @@ public class GameScript : MonoBehaviour
 	private ArrayList highlightedCubes;
 	private Vector2 currLoc;
 
+
 	// Use this for initialization
 	void Start () {
 		showingMoves = false;
@@ -36,6 +37,7 @@ public class GameScript : MonoBehaviour
 		turn = 1;
 		lastMove = new ArrayList ();
 	}
+	//show valid moves for this piece
 	public void showMoves(GameObject piece){
 		Debug.Log ("Piece Spot:"+piece.GetComponent<GamePieceScript>().location.ToString());
 		CheckersMove[] moves = getLegalMoves(piece);
@@ -48,6 +50,8 @@ public class GameScript : MonoBehaviour
 			}
 		}
 	}
+
+	//Return the current player
 	public Player currPlayer(){
 		if (turn == 1) {
 			return player1;
@@ -55,6 +59,8 @@ public class GameScript : MonoBehaviour
 			return player2;
 		}
 	}
+
+	//Return the other player
 	public Player otherPlayer(){
 		if (turn == 1) {
 			return player2;
@@ -62,6 +68,8 @@ public class GameScript : MonoBehaviour
 			return player1;
 		}
 	}
+
+	//Stop showing the moves that were highlighted
 	public void stopShowingMoves(){
 		if (highlightedCubes.Count != 0) {
 			foreach (Object cube in highlightedCubes) {
@@ -71,6 +79,7 @@ public class GameScript : MonoBehaviour
 			highlightedCubes.Clear();
 		}
 	}
+
 	//Make the board;
 	public void makeBoard(){
 			int boardSize = 8;
@@ -248,16 +257,14 @@ public class GameScript : MonoBehaviour
        */
 	CheckersMove[] getLegalJumpsFrom(int player, int row, int col) {
 		ArrayList moves = new ArrayList();  // The legal jumps will be stored in this list.
-		if (boardPieces[row,col].GetComponent<CubeSpaceScript>().getPiece().GetComponent<GamePieceScript>().player == player) {
-			if (canJump(player, row, col, row+1, col+1, row+2, col+2))
-				moves.Add(new CheckersMove(row, col, row+2, col+2));
-			if (canJump(player, row, col, row-1, col+1, row-2, col+2))
-				moves.Add(new CheckersMove(row, col, row-2, col+2));
-			if (canJump(player, row, col, row+1, col-1, row+2, col-2))
-				moves.Add(new CheckersMove(row, col, row+2, col-2));
-			if (canJump(player, row, col, row-1, col-1, row-2, col-2))
-				moves.Add(new CheckersMove(row, col, row-2, col-2));
-		}
+		if (canJump(player, row, col, row+1, col+1, row+2, col+2))
+			moves.Add(new CheckersMove(row, col, row+2, col+2));
+		if (canJump(player, row, col, row-1, col+1, row-2, col+2))
+			moves.Add(new CheckersMove(row, col, row-2, col+2));
+		if (canJump(player, row, col, row+1, col-1, row+2, col-2))
+			moves.Add(new CheckersMove(row, col, row+2, col-2));
+		if (canJump(player, row, col, row-1, col-1, row-2, col-2))
+			moves.Add(new CheckersMove(row, col, row-2, col-2));
 		if (moves.Count == 0)
 			return null;
 		else {
