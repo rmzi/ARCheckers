@@ -200,7 +200,7 @@ public class GameScript : MonoBehaviour
 			} else {
 				tray = redTray;
 			}
-			int posX = eaten.Count % 7;
+			int posX = eaten.Count % 6;
 			int posZ = -5;
 
 			if(eaten.Count > 6){
