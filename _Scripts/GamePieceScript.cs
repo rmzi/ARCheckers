@@ -23,7 +23,7 @@ public class GamePieceScript : MonoBehaviour {
 	public void setColor(int player){
 		this.player = player;
 		if(player==1){
-			color = Color.black;
+			color = Color.gray;
 		}else{
 			color = Color.red;
 		}
@@ -44,6 +44,7 @@ public class GamePieceScript : MonoBehaviour {
 	}
 	public void makeKing(){
 		isKing = true;
+		transform.localScale += new Vector3 (0f, 3f, 0f);
 	}
 	public void setLocation(Vector3 loc){
 		transform.position = loc;

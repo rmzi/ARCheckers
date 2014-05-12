@@ -5,7 +5,7 @@ public class GameScript : MonoBehaviour
 {
 	public Transform boardPiecePrefab;
 	public Transform gamePiecePrefab;
-	private GameObject[,] boardPieces;
+	public GameObject[,] boardPieces;
 
 	public int turn;
 	public Player player1;
@@ -125,7 +125,24 @@ public class GameScript : MonoBehaviour
 		Debug.Log (boardPieces);
 
 	}
-	
+
+	public void resetGame(){
+		foreach(GameObject piece in boardPieces){
+			GameObject gamePiece = piece.GetComponent<CubeSpaceScript>().getPiece();
+			Destroy(gamePiece);
+			Destroy(piece);
+		}
+
+		player1 = null;
+		player2 = null; 
+
+		boardPieces = new GameObject[8, 8];
+		player1 = new Player(1);
+		player2 = new Player(2);
+		makeBoard ();
+		turn = 1;
+	}
+
 	// Update is called once per frame
 	void Update () {
 	}
@@ -183,7 +200,7 @@ public class GameScript : MonoBehaviour
 			} else {
 				tray = redTray;
 			}
-			int posX = eaten.Count % 6;
+			int posX = eaten.Count % 7;
 			int posZ = -5;
 
 			if(eaten.Count > 6){
@@ -198,6 +215,7 @@ public class GameScript : MonoBehaviour
 				if(loc.x ==(float)row && loc.y == (float)col){
 					GameObject piece = (GameObject)pieces[i];
 					pieces.RemoveAt(i);
+					piece.gameObject.GetComponent<GamePieceScript>().isDead = true;
 					return piece;
 				}
 			}

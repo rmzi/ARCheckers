@@ -8,7 +8,7 @@ public class CubeSpaceScript : MonoBehaviour {
 	public bool isOccupied;
 	public GameScript game;
 	public GameObject piece;
-	private bool isValid;
+	public bool isValid;
 	private Color highlightColor;
 	private Color fromColor;
 	public bool isTrigger;

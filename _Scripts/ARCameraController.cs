@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
-
 public class ARCameraController : MonoBehaviour{
 	//GameScript
 	private GameScript game;
@@ -101,6 +99,10 @@ public class ARCameraController : MonoBehaviour{
 	//textmesh for screen texts
 	TextMesh t; 
 
+	//Scrollbar Game Instructions
+	private Vector2 scrollViewVector = Vector2.zero;
+	private string innerText = "1. Black moves first. Players then alternate turns.\n\n2. Pieces always move diagonally, only on black squares. Single pieces (non-Kings) are always limited to forward moves (toward the opponent).\n\n3. A piece making a non-capturing move (not involving a jump) may move only one square.\n\n4. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.\n\n5. When a piece is captured, it is removed from the board.\n\n6. If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.\n\n7. When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece.\n\n8. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)\n\n9. Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent).\n\n10. A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.";
+
 	TextMesh t1;
 	TextMesh t2;
 	string s1;
@@ -108,8 +110,6 @@ public class ARCameraController : MonoBehaviour{
 	//initial position of board
 	Vector3 initialBoardPosition;
 
-
-	
 	// Use this for initialization
 	void Start () {
 		Screen.orientation = ScreenOrientation.LandscapeLeft;
@@ -147,12 +147,10 @@ public class ARCameraController : MonoBehaviour{
 
 		t = (TextMesh)screenText.GetComponent(typeof(TextMesh));
 
-
-		int score = 0;
 		//Debug.Log (test);
-		/*t1.text = s1 + "\nScore: " + score;
-		t2.text = s2 + "\nScore: " + score;
-		t.text = "Find Image Target";*/
+		/*t1.text = s1 + "\nScore: " + 0;
+		t2.text = s2 + "\nScore: " + 0;*/
+		t.text = "Find Image Target";
 		initialBoardPosition = Board.transform.position;
 
 	}
@@ -194,7 +192,7 @@ public class ARCameraController : MonoBehaviour{
 
 				if (Physics.Raycast (focusRay, out hit, focusDistance)) {
 					Debug.Log("Hit tag: " + hit.transform.tag);
-					if(hit.transform.tag == "piece"){
+					if(hit.transform.tag == "piece"&&!hit.transform.gameObject.GetComponent<GamePieceScript>().isDead){
 						// Highlight Piece that's focused on
 						Debug.Log("hit piece");
 						if(hit.transform.GetComponent<GamePieceScript>().player == Board.GetComponent<GameScript>().turn){
@@ -283,21 +281,25 @@ public class ARCameraController : MonoBehaviour{
 				t.text = "LETS PLAY!";
 				if (GUI.Button (new Rect ((width/2-75), (height/2-50), 150, 100), "START")) {
 					lowMode = INSTR_MODE;
-
-					//redTray.gameObject.renderer.enabled = true;
-					//redTray.gameObject.SetActive(true);
-
-
-
-					//text.GetComponent(TextMesh)="blah";
-
 				}
 			}else if(lowMode == INSTR_MODE){
 			//
-				turn.normal.textColor = Color.magenta;
-				wrap.normal.textColor = Color.magenta;
-				//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"INSTRUCTIONS", turn);
-				t.text = "Instructions\n\nBlack moves first. Players alternate turns\nOnly move diagonally on dark squres.\nA player wins when opponent can't make any \nmoves or is left without pieces.";
+				turn.normal.textColor = Color.white;
+				turn.fontSize = 20;
+				//style to wrap text
+				wrap.normal.textColor = Color.white;
+				wrap.wordWrap = true;
+				//Texture2D bg = new Texture
+				//wrap.normal.background = new Texture2D();
+
+				GUI.Label((new Rect (25,0, 150, 50)),"INSTRUCTIONS", turn);
+				// Begin the ScrollView
+				scrollViewVector = GUI.BeginScrollView (new Rect (25, 30, (3*(width/4)), (3*(height/4))), scrollViewVector, new Rect (0, 0, width, (height)));
+				// Put something inside the ScrollView
+				innerText = GUI.TextArea (new Rect (0, 0, width, (height)), innerText, wrap);
+				// End the ScrollView
+				GUI.EndScrollView();
+
 				wrap.wordWrap = true;
 				//GUI.Label((new Rect (((width/5)-50),100, (width-200), (height-200))),"Black moves first. Players then alternate moves.Moves are allowed only on the dark squares, so pieces always move diagonally. Single pieces are always limited to forward moves (toward the opponent). A piece making a non-capturing move (not involving a jump) may move only one square. A piece making a capturing move (a jump) leaps over one of the opponent's pieces, landing in a straight diagonal line on the other side. Only one piece may be captured in a single jump; however, multiple jumps are allowed on a single turn.When a piece is captured, it is removed from the board.If a player is able to make a capture, there is no option -- the jump must be made. If more than one capture is available, the player is free to choose whichever he or she prefers.When a piece reaches the furthest row from the player who controls that piece, it is crowned and becomes a king. One of the pieces which had been captured is placed on top of the king so that it is twice as high as a single piece. Kings are limited to moving diagonally, but may move both forward and backward. (Remember that single pieces, i.e. non-kings, are always limited to forward moves.)Kings may combine jumps in several directions -- forward and backward -- on the same turn. Single pieces may shift direction diagonally during a multiple capture turn, but must always jump forward (toward the opponent). A player wins the game when the opponent cannot make a move. In most cases, this is because all of the opponent's pieces have been captured, but it could also be because all of his pieces are blocked in.",wrap);
 				if (GUI.Button (new Rect ((width-150), (height-100), 150, 100), "Continue")) {
@@ -305,14 +307,11 @@ public class ARCameraController : MonoBehaviour{
 					lowMode = SEL_MODE;
 					gameTurn = true;
 					game.makeBoard ();
-					int score = 0;
 					TextMesh t1	 =(TextMesh)Player1text.GetComponent(typeof(TextMesh));
 					TextMesh t2 =(TextMesh)Player2text.GetComponent(typeof(TextMesh));
-					string s1 = t1.text + "\nScore: ";
-					string s2 = t2.text + "\nScore: ";
-					t1.text = s1 + "\nScore: " + score;
-		t2.text = s2 + "\nScore: " + score;
-		t.text = "Find Image Target";
+					t1.text = "Player 1 Collection" + "\nScore: " + game.player1.eaten.Count;
+					t2.text = "Player 2 Collection" + "\nScore: " + game.player2.eaten.Count;
+					t.text = "Find Image Target";
 				}
 			}
 
@@ -359,13 +358,12 @@ public class ARCameraController : MonoBehaviour{
 				/////////////////
 				//   NewGame   //
 				/////////////////
-				if (GUI.Button (new Rect ((width-400), (height-100), 100, 100), "Resign")) {
-					//translateMode = true;
+				if (GUI.Button (new Rect ((width-400), (height-100), 100, 100), "Reset Game")) {
+					game.resetGame();
+					highMode = PREGAME_MODE;
+					lowMode = INSTR_MODE;
 				}
 				//
-				if (GUI.Button (new Rect ((width-300), (height-100), 100, 100), "Show Moves")) {
-
-				}
 
 			}else if(lowMode == MOVE_MODE){
 				// MOVEMENT MODE
@@ -379,7 +377,7 @@ public class ARCameraController : MonoBehaviour{
 						if(hit.transform.tag=="space"){
 							foreach(Object o in game.highlightedCubes){
 								CubeSpaceScript tmpCube = ((GameObject) o).GetComponent<CubeSpaceScript>();
-								if(hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation()==tmpCube.getLocation()){
+								if(hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation()==tmpCube.getLocation()&&hit.transform.gameObject.GetComponent<CubeSpaceScript>().isValid){
 									newSpot = hit.transform.gameObject.GetComponent<CubeSpaceScript>().getLocation();
 								}
 							}
@@ -390,7 +388,20 @@ public class ARCameraController : MonoBehaviour{
 						selectedObject.GetComponent<GamePieceScript>().resetColor();
 						GamePieceScript script = selectedObject.GetComponent<GamePieceScript>();
 						game.makeMove(new GameScript.CheckersMove((int)script.location.x, (int) script.location.y, (int) newSpot.x, (int) newSpot.y));
+						TextMesh t1	 =(TextMesh)Player1text.GetComponent(typeof(TextMesh));
+						TextMesh t2 =(TextMesh)Player2text.GetComponent(typeof(TextMesh));
+						t1.text = "Player 1 Collection" + "\nScore: " + game.player1.eaten.Count;
+						t2.text = "Player 2 Collection" + "\nScore: " + game.player2.eaten.Count;
+						game.boardPieces[(int)script.location.x, (int)script.location.y].GetComponent<CubeSpaceScript>().unOccupy();
 						script.location = newSpot;
+						game.boardPieces[(int)newSpot.x, (int)newSpot.y].GetComponent<CubeSpaceScript>().setPiece(selectedObject);
+						if(game.turn == 1){
+							if(newSpot.x == 7)
+								script.makeKing();
+						} else {
+							if(newSpot.x == 0)
+								script.makeKing();
+						}
 						selectedObject = null;
 						game.stopShowingMoves();
 						lowMode = PASS_MODE;
@@ -414,33 +425,36 @@ public class ARCameraController : MonoBehaviour{
 			}
 		} else if(highMode == EXPLORE_MODE){
 			// EXPLORE MODE
-			// Translation via Joystick
+			// Translation via DPad
+			Vector3 movementRay;
+			
 			if (GUI.Button (new Rect ((0), (height-75), 50, 50), "<")){
-				Board.transform.Translate(transform.right *3);
-	
-
+				if(Board.transform.position.x - initialBoardPosition.x < 100){
+					movementRay = transform.right;
+					movementRay.y = 0;
+					Board.transform.Translate(movementRay * transform.localScale.x);
+				}
 			}
 			else if (GUI.Button (new Rect ((100), (height-75), 50, 50), ">")){
-				Board.transform.Translate(transform.right *-3);
-
-
-				
+				if(initialBoardPosition.x - Board.transform.position.x < 100){
+					movementRay = transform.right;
+					movementRay.y = 0;
+					Board.transform.Translate(movementRay * -transform.localScale.x);
+				}
 			}
 			else if (GUI.Button (new Rect ((50), (height-100), 50, 50), "^")){
-				//if(game.turn==1){
-					Board.transform.Translate(transform.forward*-3);
-				//if(game.turn==2){
-					//Board.transform.position += new Vector3 (1, 0, 0);}
-				
+				if(Board.transform.position.z - initialBoardPosition.z < 100){
+					movementRay = transform.forward;
+					movementRay.y = 0;
+					Board.transform.Translate(movementRay * transform.localScale.x);
+				}
 			}
 			else if(GUI.Button (new Rect ((50), (height-50), 50, 50), "v")){
-			Board.transform.Translate(transform.forward*3);
-
-//				if(game.turn==1){
-//					Board.transform.position += new Vector3 (1, 0, 0);}
-//				if(game.turn==2){
-//					Board.transform.position += new Vector3 (-1, 0, 0);}
-				
+				if(initialBoardPosition.z - Board.transform.position.z < 100){
+					movementRay = transform.forward;
+					movementRay.y = 0;
+					Board.transform.Translate(movementRay * - transform.localScale.x);
+				}
 			}
 
 			//joystick = (GUITexture)Instantiate(joystick, joystick.transform.position, Quaternion.identity);
@@ -466,40 +480,15 @@ public class ARCameraController : MonoBehaviour{
 			/////////////////
 			//   NewGame   //
 			/////////////////
-			if (GUI.RepeatButton (new Rect ((width-300), (height-100), 100, 100), "Resign")) {
+			if (GUI.RepeatButton (new Rect ((width-300), (height-100), 100, 100), "Reset")) {
 				//translateMode = true;
+				Board.transform.localScale = initScale;
+				Board.transform.position = initialBoardPosition;
 			}
 			if(lowMode == SCALE_MODE){
 				// SCALE MODE
 			}
 		}
-
-		/*if (gameTurn) {
-						//player message
-						if (game.turn == 1) {
-
-								turn.normal.textColor = Color.magenta;
-								//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN BLACK", turn);
-								
-								//p2 = false;
-						}
-						if (game.turn == 2) {
-								turn.normal.textColor = Color.magenta;
-								//GUI.Label((new Rect (((width/2)-50),0, 150, 50)),"YOUR TURN RED", turn);
-								t.text = "Your Turn Red";
-								//p1 = false;
-						}
-				}*/
-		int number = 12;
-
-		redP2.normal.textColor = Color.red;
-		redP1.normal.textColor = Color.white;
-		GUI.Label((new Rect ((width-110), 0, 100, 100)),"Player 1", redP1);
-		GUI.Label((new Rect ((width-120), 50, 100, 100)),"Count: "+ number, redP1);
-		GUI.Label((new Rect ((width-120), 100, 100, 100)),"Score: "+ number, redP1);
-		GUI.Label((new Rect ((width-50), 0, 100, 100)),"Player 2", redP2);
-		GUI.Label((new Rect ((width-60), 50, 100, 100)),"Count: "+ number, redP2);
-		GUI.Label((new Rect ((width-60), 100, 100, 100)),"Score: "+ number, redP2);
 	}
 	
 	void focusOnObject (Transform obj){
