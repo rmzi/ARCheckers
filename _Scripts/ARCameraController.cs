@@ -413,6 +413,12 @@ public class ARCameraController : MonoBehaviour{
 												selectedObject = null;
 												game.stopShowingMoves ();
 
+												lowMode = PASS_MODE;
+												if (game.turn == 1)
+													game.turn = 2;
+												else if (game.turn == 2)
+													game.turn = 1;
+												
 												if (game.player1.eaten.Count == 12) {
 														highMode = SPECIAL_MODE;
 														lowMode = END_GAME_MODE;
@@ -423,11 +429,7 @@ public class ARCameraController : MonoBehaviour{
 														t.text = "Player2 Wins!";
 												}
 						
-												lowMode = PASS_MODE;
-												if (game.turn == 1)
-														game.turn = 2;
-												else if (game.turn == 2)
-														game.turn = 1;
+												
 										}
 								}
 
