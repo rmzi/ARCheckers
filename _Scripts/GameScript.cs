@@ -52,7 +52,17 @@ public class GameScript : MonoBehaviour
 			}
 		}
 	}
-
+	//Find Moves
+	public void findMoves(){
+		ArrayList moves = new ArrayList();
+		ArrayList jumps = new ArrayList();
+		if (turn == 1) {
+			foreach(object P in player1.pieces){
+				
+			}
+		}else{
+		}
+	}
 	//Return the current player
 	public Player currPlayer(){
 		if (turn == 1) {
