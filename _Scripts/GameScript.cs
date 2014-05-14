@@ -14,12 +14,13 @@ public class GameScript : MonoBehaviour
 	public static GameObject redTray;
 	public static GameObject blackTray;
 	//arraylist that makes up the last move for the previous player
-	private ArrayList lastMove;
+	public ArrayList lastMove;
 	//true when player is done with move
 	public bool doneMove;
 	private bool showingMoves;
 	public ArrayList highlightedCubes;
 	private Vector2 currLoc;
+	public ArrayList forceMoves;
 
 
 	// Use this for initialization
@@ -27,6 +28,7 @@ public class GameScript : MonoBehaviour
 		showingMoves = false;
 		doneMove = false;
 		highlightedCubes = new ArrayList ();
+		forceMoves = new ArrayList ();
 		boardPieces = new GameObject[8, 8];
 
 		player1 = new Player(1);
@@ -58,9 +60,49 @@ public class GameScript : MonoBehaviour
 		ArrayList jumps = new ArrayList();
 		if (turn == 1) {
 			foreach(object P in player1.pieces){
-				
+				CheckersMove[] temp = getLegalMoves((GameObject) P);
+				if(temp!=null){
+					if(temp.Length>0)
+					{
+						if(temp[0].isJump()==true){
+							foreach(CheckersMove m in temp){
+								jumps.Add((GameObject)P);
+							}
+						}else{
+							if(jumps.Count<=0){
+								foreach(CheckersMove m in temp){
+									moves.Add(m);
+								}
+							}
+						}	
+					}
+				}
 			}
 		}else{
+			foreach(object P in player2.pieces){
+				CheckersMove[] temp = getLegalMoves((GameObject) P);
+				if(temp!=null){
+					if(temp.Length>0)
+					{
+						if(temp[0].isJump()==true){
+							foreach(CheckersMove m in temp){
+								jumps.Add((GameObject)P);
+							}
+						}else{
+							if(jumps.Count<=0){
+								foreach(CheckersMove m in temp){
+									moves.Add(m);
+								}
+							}
+						}	
+					}
+				}
+			}
+		}
+		if (jumps.Count > 0) {
+			forceMoves = jumps;
+		}else{
+			forceMoves.Clear();
 		}
 	}
 	//Return the current player
@@ -304,7 +346,7 @@ public class GameScript : MonoBehaviour
        * jumps are possible, null is returned.  The logic is similar
        * to the logic of the getLegalMoves() method.
        */
-	CheckersMove[] getLegalJumpsFrom(int player, int row, int col) {
+	public CheckersMove[] getLegalJumpsFrom(int player, int row, int col) {
 		ArrayList moves = new ArrayList();  // The legal jumps will be stored in this list.
 		if (canJump(player, row, col, row+1, col+1, row+2, col+2))
 			moves.Add(new CheckersMove(row, col, row+2, col+2));

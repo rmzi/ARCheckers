@@ -335,21 +335,36 @@ public class ARCameraController : MonoBehaviour{
 								/// Pick Up
 								/// Place
 								if (GUI.Button (new Rect ((width - 100), (height - 100), 100, 100), "Select Piece")) {
-										if (focusedObject != null) {
-												//check if piece is valid move
-												GameScript.CheckersMove[] valMoves = Board.GetComponent<GameScript> ().getLegalMoves (focusedObject);
-												if (valMoves != null) {
-														if (valMoves.Length > 0) {
-																selectedObject = focusedObject;
-																lowMode = MOVE_MODE;
-																selectedObject.GetComponent<GamePieceScript> ().select ();
-																game.showMoves (selectedObject);
-																focusedObject = null;
-														}
-												} else {
-														//dont allow move
+									if (focusedObject != null) {
+											//check if piece is valid move
+										game.findMoves();
+										if(game.forceMoves.Count>0)
+										{
+											foreach(Object j in game.forceMoves){
+												GameObject temp = (GameObject) j;
+												if(focusedObject.GetComponent<GamePieceScript>().location.x ==  temp.GetComponent<GamePieceScript>().location.x && focusedObject.GetComponent<GamePieceScript>().location.y ==  temp.GetComponent<GamePieceScript>().location.y){
+													selectedObject = focusedObject;
+													lowMode = MOVE_MODE;
+													selectedObject.GetComponent<GamePieceScript> ().select ();
+													game.showMoves (selectedObject);
+													focusedObject = null;
 												}
+											}
+										}else{
+											GameScript.CheckersMove[] valMoves = Board.GetComponent<GameScript> ().getLegalMoves (focusedObject);
+											if (valMoves != null) {
+												if (valMoves.Length > 0) {
+													selectedObject = focusedObject;
+													lowMode = MOVE_MODE;
+													selectedObject.GetComponent<GamePieceScript> ().select ();
+													game.showMoves (selectedObject);
+													focusedObject = null;
+												}
+											} else {
+												//dont allow move
+											}	
 										}
+									}
 								}
 								/////////////////
 								// Translation //
@@ -393,8 +408,9 @@ public class ARCameraController : MonoBehaviour{
 										}
 										if (newSpot.x != -1.0f && newSpot.y != -1.0f) {
 												//check if there is another jump to force player to jump
-												selectedObject.GetComponent<GamePieceScript> ().resetColor ();
+									
 												GamePieceScript script = selectedObject.GetComponent<GamePieceScript> ();
+												script.resetColor();
 												game.makeMove (new GameScript.CheckersMove ((int)script.location.x, (int)script.location.y, (int)newSpot.x, (int)newSpot.y));
 												TextMesh t1 = (TextMesh)Player1text.GetComponent (typeof(TextMesh));
 												TextMesh t2 = (TextMesh)Player2text.GetComponent (typeof(TextMesh));
@@ -404,32 +420,37 @@ public class ARCameraController : MonoBehaviour{
 												script.location = newSpot;
 												game.boardPieces [(int)newSpot.x, (int)newSpot.y].GetComponent<CubeSpaceScript> ().setPiece (selectedObject);
 												if (game.turn == 1) {
-														if (newSpot.x == 7)
-																script.makeKing ();
+													if (newSpot.x == 7)
+														script.makeKing ();
 												} else {
-														if (newSpot.x == 0)
-																script.makeKing ();
+													if (newSpot.x == 0)
+														script.makeKing ();
 												}
-												selectedObject = null;
-												game.stopShowingMoves ();
-
-												lowMode = PASS_MODE;
-												if (game.turn == 1)
-													game.turn = 2;
-												else if (game.turn == 2)
-													game.turn = 1;
-												
-												if (game.player1.eaten.Count == 12) {
+												GameScript.CheckersMove[] move = game.getLegalJumpsFrom(game.turn,(int)newSpot.x,(int)newSpot.y);
+												if(move!=null)
+												{
+													game.stopShowingMoves ();
+													game.showMoves(selectedObject);
+												}else{
+													selectedObject = null;
+													game.stopShowingMoves ();
+													
+													lowMode = PASS_MODE;
+													if (game.turn == 1)
+														game.turn = 2;
+													else if (game.turn == 2)
+														game.turn = 1;
+													
+													if (game.player1.eaten.Count == 12) {
 														highMode = SPECIAL_MODE;
 														lowMode = END_GAME_MODE;
 														t.text = "Player1 Wins!";
-												} else if (game.player2.eaten.Count == 12) {
+													} else if (game.player2.eaten.Count == 12) {
 														highMode = SPECIAL_MODE;
 														lowMode = END_GAME_MODE;
 														t.text = "Player2 Wins!";
+													}
 												}
-						
-												
 										}
 								}
 
